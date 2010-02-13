@@ -1,5 +1,15 @@
 package Log::Contextual;
 
+use 5.006;
+
+$VERSION = '1.000';
+
+require Exporter;
+
+BEGIN { @ISA = qw(Exporter) }
+
+@EXPORT = qw(set_logger log_debug with_logger);
+
 our $Get_Logger;
 
 sub set_logger {
