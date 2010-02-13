@@ -1,5 +1,22 @@
 package Log::Contextual;
 
+our $Get_Logger;
+
+sub set_logger {
+   $Get_Logger = $_[0];
+}
+
+sub log_debug (&) {
+   my $log = $Get_Logger->();
+   $log->debug($_[0]->())
+      if $log->is_debug;
+}
+
+sub with_logger {
+   local $Get_Logger = $_[0];
+   $_[1]->()
+}
+
 1;
 
 __END__
