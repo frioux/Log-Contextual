@@ -22,9 +22,9 @@ sub log_debug (&) {
       if $log->is_debug;
 }
 
-sub with_logger {
-   local $Get_Logger = $_[0];
-   $_[1]->()
+sub with_logger (&$) {
+   local $Get_Logger = $_[1];
+   $_[0]->();
 }
 
 1;
