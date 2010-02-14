@@ -16,10 +16,40 @@ sub set_logger {
    $Get_Logger = $_[0];
 }
 
+sub log_trace (&) {
+   my $log = $Get_Logger->();
+   $log->trace($_[0]->())
+      if $log->is_trace;
+}
+
 sub log_debug (&) {
    my $log = $Get_Logger->();
    $log->debug($_[0]->())
       if $log->is_debug;
+}
+
+sub log_info (&) {
+   my $log = $Get_Logger->();
+   $log->info($_[0]->())
+      if $log->is_info;
+}
+
+sub log_warn (&) {
+   my $log = $Get_Logger->();
+   $log->warn($_[0]->())
+      if $log->is_warn;
+}
+
+sub log_error (&) {
+   my $log = $Get_Logger->();
+   $log->error($_[0]->())
+      if $log->is_error;
+}
+
+sub log_fatal (&) {
+   my $log = $Get_Logger->();
+   $log->fatal($_[0]->())
+      if $log->is_fatal;
 }
 
 sub with_logger (&$) {
