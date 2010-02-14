@@ -4,7 +4,14 @@ require Exporter;
 
 BEGIN { @ISA = qw(Exporter) }
 
-@EXPORT = qw(Dlog_debug DlogS_debug);
+@EXPORT = qw(
+   Dlog_debug DlogS_debug
+   Dlog_trace DlogS_trace
+   Dlog_warn DlogS_warn
+   Dlog_info DlogS_info
+   Dlog_error DlogS_error
+   Dlog_fatal DlogS_fatal
+);
 
 use Data::Dumper::Concise;
 use Log::Contextual ();
