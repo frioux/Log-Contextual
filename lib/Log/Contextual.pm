@@ -16,8 +16,11 @@ sub set_logger (&) {
    $Get_Logger = $_[0];
 }
 
-sub with_logger (&&) {
-   local $Get_Logger = $_[0];
+sub with_logger {
+   my $logger = $_[0];
+   $logger = do { my $l = $logger; sub { $l } }
+      if ref $logger ne 'CODE';
+   local $Get_Logger = $logger;
    $_[1]->();
 }
 

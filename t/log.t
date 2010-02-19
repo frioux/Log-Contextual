@@ -10,9 +10,9 @@ my $var_logger2 =  VarLogger->new;
 my $var_logger3 = VarLogger->new;
 
 WITHLOGGER: {
-   with_logger { $var_logger2 } sub {
+   with_logger sub { $var_logger2 } => sub {
 
-      with_logger { $var_logger1 } sub {
+      with_logger $var_logger1 => sub {
          log_debug { 'nothing!' }
       };
       log_debug { 'frew!' };
@@ -30,7 +30,7 @@ SETLOGGER: {
 }
 
 SETWITHLOGGER: {
-   with_logger { $var_logger1 } sub {
+   with_logger $var_logger1 => sub {
       log_debug { 'nothing again!' }
    };
 
