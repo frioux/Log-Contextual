@@ -10,14 +10,14 @@ my $var_logger2 =  VarLogger->new;
 my $var_logger3 = VarLogger->new;
 
 WITHLOGGER: {
-   with_logger {
+   with_logger { $var_logger2 } sub {
 
-      with_logger {
+      with_logger { $var_logger1 } sub {
          log_debug { 'nothing!' }
-      } sub { $var_logger1 };
+      };
       log_debug { 'frew!' };
 
-   } sub { $var_logger2 };
+   };
 
    is( $var_logger1->var, 'nothing!', 'inner scoped logger works' );
    is( $var_logger2->var, 'frew!', 'outer scoped logger works' );
@@ -30,9 +30,9 @@ SETLOGGER: {
 }
 
 SETWITHLOGGER: {
-   with_logger {
+   with_logger { $var_logger1 } sub {
       log_debug { 'nothing again!' }
-   } sub { $var_logger1 };
+   };
 
    is( $var_logger1->var, 'nothing again!',
       'inner scoped logger works after using set_logger'
