@@ -1,13 +1,14 @@
 package Log::Contextual;
 
-use 5.006;
+use strict;
+use warnings;
 
-$VERSION = '1.000';
+our $VERSION = '1.000';
 
 require Exporter;
 use Data::Dumper::Concise;
 
-BEGIN { @ISA = qw(Exporter) }
+BEGIN { our @ISA = qw(Exporter) }
 
 my @dlog = (qw{
    Dlog_debug DlogS_debug
@@ -27,20 +28,29 @@ my @log = (qw{
    log_fatal
 });
 
-@EXPORT_OK = (
+our @EXPORT_OK = (
    @dlog, @log,
    qw{set_logger with_logger}
 );
 
-%EXPORT_TAGS = (
+our %EXPORT_TAGS = (
    dlog => \@dlog,
    log  => \@log,
 );
 
 sub import {
+   my $package = shift;
    die 'Log::Contextual does not have a default import list'
-      if @_ == 1;
-   __PACKAGE__->export_to_level(1, shift, @_);
+      unless @_;
+
+   for my $idx ( 0 .. $#_ ) {
+      if ( $_[$idx] eq '-logger' ) {
+         set_logger($_[$idx + 1]);
+         splice @_, $idx, 2;
+         last;
+      }
+   }
+   $package->export_to_level(1, $package, @_);
 }
 
 our $Get_Logger;
