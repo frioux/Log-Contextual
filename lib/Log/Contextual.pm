@@ -55,8 +55,11 @@ sub import {
 
 our $Get_Logger;
 
-sub set_logger (&) {
-   $Get_Logger = $_[0];
+sub set_logger {
+   my $logger = $_[0];
+   $logger = do { my $l = $logger; sub { $l } }
+      if ref $logger ne 'CODE';
+   $Get_Logger = $logger;
 }
 
 sub with_logger {
