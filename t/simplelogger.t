@@ -48,3 +48,6 @@ is($response, "[error] error\n", 'error renders correctly');
 log_fatal { 'fatal' };
 is($response, "[fatal] fatal\n", 'fatal renders correctly');
 
+log_debug { 'line 1', 'line 2' };
+is($response, "[debug] line 1\nline 2\n", 'multiline log renders correctly');
+
