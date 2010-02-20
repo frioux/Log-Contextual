@@ -8,7 +8,7 @@ my $var_log;
 
 BEGIN { $var_log = VarLogger->new }
 use Log::Contextual qw{:dlog}, -logger => $var_log;
-
+{
 my @foo = Dlog_trace { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_trace passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_trace is correct');
@@ -26,8 +26,10 @@ tLook ma, data: [
   "baz"
 ]
 OUT
+}
 
 
+{
 my @foo = Dlog_debug { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_debug passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_debug is correct');
@@ -45,8 +47,10 @@ dLook ma, data: [
   "baz"
 ]
 OUT
+}
 
 
+{
 my @foo = Dlog_info { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_info passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_info is correct');
@@ -64,8 +68,10 @@ iLook ma, data: [
   "baz"
 ]
 OUT
+}
 
 
+{
 my @foo = Dlog_warn { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_warn passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_warn is correct');
@@ -83,8 +89,10 @@ wLook ma, data: [
   "baz"
 ]
 OUT
+}
 
 
+{
 my @foo = Dlog_error { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_error passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_error is correct');
@@ -102,8 +110,10 @@ eLook ma, data: [
   "baz"
 ]
 OUT
+}
 
 
+{
 my @foo = Dlog_fatal { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_fatal passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_fatal is correct');
@@ -121,4 +131,4 @@ fLook ma, data: [
   "baz"
 ]
 OUT
-
+}
