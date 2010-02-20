@@ -4,5 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 
 all_from 'lib/Log/Contextual.pm';
+requires 'Data::Dumper::Concise';
 
 WriteAll;
