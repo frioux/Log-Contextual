@@ -5,8 +5,8 @@ use lib 't/lib';
 use VarLogger;
 use Log::Contextual qw{:log with_logger set_logger};
 use Test::More qw(no_plan);
-my $var_logger1 =  VarLogger->new;
-my $var_logger2 =  VarLogger->new;
+my $var_logger1 = VarLogger->new;
+my $var_logger2 = VarLogger->new;
 my $var_logger3 = VarLogger->new;
 
 WITHLOGGER: {
@@ -43,3 +43,5 @@ SETWITHLOGGER: {
       q{set_logger's logger comes back after scoped logger}
    );
 }
+
+ok(!eval { Log::Contextual->import; 1 }, 'Blank Log::Contextual import dies');
