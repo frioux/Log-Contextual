@@ -317,9 +317,9 @@ is called on the underlying C<$logger> object.  The basic pattern is:
 
 =head2 Dlog_$level
 
-Arguments: CodeRef $returning_message
+Arguments: CodeRef $returning_message, @args
 
-All of the following six functions work the same as their log_$level brethren,
+All of the following six functions work the same as their L<log_$level> brethren,
 except they return what is passed into them and as a bonus put the stringified
 (with L<Data::Dumper::Concise>) version of their args into C<$_>.  This means
 you can do cool things like the following:
@@ -357,6 +357,42 @@ and the output might look something like:
 =head3 Dlog_fatal
 
  Dlog_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
+
+=head2 DlogS_$level
+
+Arguments: CodeRef $returning_message, Item $arg
+
+All of the following six functions work the same as the related L<Dlog_$level>
+functions, except they only take a single scalar after the
+C<$returning_message> instead of slurping up (and also setting C<wantarray>)
+all the C<@args>
+
+ my $pals_rs = DlogS_debug { "pals resultset: $_" }
+   $schema->resultset('Pals')->search({ perlers => 1 });
+
+=head3 DlogS_trace
+
+ my ($foo, $bar) = DlogS_trace { "entered method foo with first arg $_" } @_;
+
+=head3 DlogS_debug
+
+ DlogS_debug { "random data structure: $_" } { foo => $bar };
+
+=head3 DlogS_info
+
+ return DlogS_info { "html from method returned: $_" } "<html>...</html>";
+
+=head3 DlogS_warn
+
+ DlogS_warn { "probably invalid value: $_" } $foo;
+
+=head3 DlogS_error
+
+ DlogS_error { "non-numeric user input! ($_)" } $port;
+
+=head3 DlogS_fatal
+
+ DlogS_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
 
 =head1 AUTHOR
 
