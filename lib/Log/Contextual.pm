@@ -223,7 +223,7 @@ __END__
 
 =head1 NAME
 
-Log::Contextual - Super simple logging interface
+Log::Contextual - Simple logging interface with a contextual log
 
 =head1 SYNOPSIS
 
