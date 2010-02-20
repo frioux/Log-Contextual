@@ -5,10 +5,43 @@ use 5.006;
 $VERSION = '1.000';
 
 require Exporter;
+use Data::Dumper::Concise;
 
 BEGIN { @ISA = qw(Exporter) }
 
-@EXPORT = qw(set_logger log_debug with_logger);
+my @dlog = (qw{
+   Dlog_debug DlogS_debug
+   Dlog_trace DlogS_trace
+   Dlog_warn DlogS_warn
+   Dlog_info DlogS_info
+   Dlog_error DlogS_error
+   Dlog_fatal DlogS_fatal
+});
+
+my @log = (qw{
+   log_debug
+   log_trace
+   log_warn
+   log_info
+   log_error
+   log_fatal
+});
+
+@EXPORT_OK = (
+   @dlog, @log,
+   qw{set_logger with_logger}
+);
+
+%EXPORT_TAGS = (
+   dlog => \@dlog,
+   log  => \@log,
+);
+
+sub import {
+   die 'Log::Contextual does not have a default import list'
+      if @_ == 1;
+   __PACKAGE__->export_to_level(1, shift, @_);
+}
 
 our $Get_Logger;
 
@@ -58,6 +91,116 @@ sub log_fatal (&) {
    my $log = $Get_Logger->();
    $log->fatal($_[0]->())
       if $log->is_fatal;
+}
+
+
+
+sub Dlog_trace (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_trace {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_trace (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_trace {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
+}
+
+sub Dlog_debug (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_debug {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_debug (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_debug {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
+}
+
+sub Dlog_info (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_info {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_info (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_info {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
+}
+
+sub Dlog_warn (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_warn {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_warn (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_warn {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
+}
+
+sub Dlog_error (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_error {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_error (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_error {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
+}
+
+sub Dlog_fatal (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_fatal {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  };
+  @values
+}
+
+sub DlogS_fatal (&$) {
+  my $code = $_[0];
+  my $value = $_[1];
+  log_fatal {
+     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
+  };
+  $value
 }
 
 1;

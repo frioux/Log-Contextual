@@ -3,7 +3,7 @@ use warnings;
 
 use lib 't/lib';
 use VarLogger;
-use Log::Contextual;
+use Log::Contextual qw{:log with_logger set_logger};
 use Test::More qw(no_plan);
 my $var_logger1 =  VarLogger->new;
 my $var_logger2 =  VarLogger->new;

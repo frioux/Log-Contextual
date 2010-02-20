@@ -5,8 +5,7 @@ use lib 't/lib';
 use VarLogger;
 use Test::More 'no_plan';
 
-use Log::Contextual;
-use Log::Contextual::Sugar;
+use Log::Contextual qw{:dlog set_logger};
 
 my $var_log =  VarLogger->new;
 
