@@ -13,14 +13,14 @@ set_logger(sub { $var_log });
 my @foo = Dlog_debug { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_debug passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for Dlog_debug is correct');
-Look ma, data: "frew"
+dLook ma, data: "frew"
 "bar"
 "baz"
 OUT
 my $bar = DlogS_debug { "Look ma, data: $_" } [qw{frew bar baz}];
 ok( eq_array($bar, [qw{frew bar baz}]), 'DlogS_debug passes data through correctly');
 is( $var_log->var, <<'OUT', 'Output for DlogS_debug is correct');
-Look ma, data: [
+dLook ma, data: [
   "frew",
   "bar",
   "baz"

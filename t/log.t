@@ -19,14 +19,14 @@ WITHLOGGER: {
 
    };
 
-   is( $var_logger1->var, 'nothing!', 'inner scoped logger works' );
-   is( $var_logger2->var, 'frew!', 'outer scoped logger works' );
+   is( $var_logger1->var, 'dnothing!', 'inner scoped logger works' );
+   is( $var_logger2->var, 'dfrew!', 'outer scoped logger works' );
 }
 
 SETLOGGER: {
    set_logger(sub { $var_logger3 });
    log_debug { 'set_logger' };
-   is( $var_logger3->var, 'set_logger', 'set logger works' );
+   is( $var_logger3->var, 'dset_logger', 'set logger works' );
 }
 
 SETWITHLOGGER: {
@@ -34,12 +34,12 @@ SETWITHLOGGER: {
       log_debug { 'nothing again!' }
    };
 
-   is( $var_logger1->var, 'nothing again!',
+   is( $var_logger1->var, 'dnothing again!',
       'inner scoped logger works after using set_logger'
    );
 
    log_debug { 'frioux!' };
-   is( $var_logger3->var, 'frioux!',
+   is( $var_logger3->var, 'dfrioux!',
       q{set_logger's logger comes back after scoped logger}
    );
 }
