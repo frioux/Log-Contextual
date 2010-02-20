@@ -226,40 +226,45 @@ Log::Contextual - Super simple logging interface
 
 =head1 SYNOPSIS
 
- use Log::Contextual;
+ use Log::Contextual qw{:log set_logger with_logger};
 
- my $logger  = WarnLogger->new;
- my $logger2 = FileLogger->new;
+ my $logger  = Log::Contextual::SimpleLogger->new({ levels => [qw{debug}]});
 
  set_logger { $logger };
 
  log_debug { "program started" };
 
  sub foo {
-   with_logger {
-     log_trace { "foo entered" };
+   with_logger Log::Contextual::SimpleLogger->new({
+       levels => [qw{trace debug}]
+     }) => sub {
+     log_trace { 'foo entered' };
      # ...
-     log_trace { "foo left"    };
-   } $logger2;
+     log_trace { 'foo left' };
+   };
  }
 
 =head1 DESCRIPTION
 
-This module is for simplistic but very extensible logging.
+This module is a simple interface to extensible logging.
 
 =head1 FUNCTIONS
 
 =head2 set_logger
 
  my $logger = WarnLogger->new;
- set_logger { $logger };
+ set_logger $logger;
 
-Arguments: CodeRef $returning_logger
+Arguments: Ref|CodeRef $returning_logger
+
+C<set_logger> will just set the current logger to whatever you pass it.  It
+expects a C<CodeRef>, but if you pass it something else it will wrap it in a
+C<CodeRef> for you.
 
 =head2 with_logger
 
  my $logger = WarnLogger->new;
- with_logger { $logger } sub {
+ with_logger $logger => sub {
     if (1 == 0) {
        log_fatal { 'Non Logical Universe Detected' };
     } else {
@@ -267,50 +272,91 @@ Arguments: CodeRef $returning_logger
     }
  };
 
-Arguments: CodeRef $to_execute, CodeRef $returning_logger
+Arguments: Ref|CodeRef $returning_logger, CodeRef $to_execute
 
-=head2 log_trace
+C<with_logger> sets the logger for the scope of the C<CodeRef> C<$to_execute>.
+as with L<set_logger>, C<with_logger> will wrap C<$returning_logger> with a
+C<CodeRef> if needed.
+
+=head2 log_$level
+
+Arguments: CodeRef $returning_message
+
+All of the following six functions work the same except that a different method
+is called on the underlying C<$logger> object.  The basic pattern is:
+
+ sub log_$level (&) {
+   if ($logger->is_$level) {
+     $logger->$level(shift->());
+   }
+ }
+
+=head3 log_trace
 
  log_trace { 'entered method foo with args ' join q{,}, @args };
 
-Arguments: CodeRef $returning_message
-
-=head2 log_debug
+=head3 log_debug
 
  log_debug { 'entered method foo' };
 
-Arguments: CodeRef $returning_message
-
-=head2 log_info
+=head3 log_info
 
  log_info { 'started process foo' };
 
-Arguments: CodeRef $returning_message
-
-=head2 log_warn
+=head3 log_warn
 
  log_warn { 'possible misconfiguration at line 10' };
 
-Arguments: CodeRef $returning_message
-
-=head2 log_error
+=head3 log_error
 
  log_error { 'non-numeric user input!' };
 
-Arguments: CodeRef $returning_message
-
-=head2 log_fatal
+=head3 log_fatal
 
  log_fatal { '1 is never equal to 0!' };
 
+=head2 Dlog_$level
+
 Arguments: CodeRef $returning_message
 
-=head1 SUGARY SYNTAX
+All of the following six functions work the same as their log_$level brethren,
+except they return what is passed into them and as a bonus put the stringified
+(with L<Data::Dumper::Concise>) version of their args into C<$_>.  This means
+you can do cool things like the following:
 
-This package also provides:
+ my @nicks = Dlog_debug { "names: $_" } map $_->value, $frew->names->all;
 
-L<Log::Contextual::Sugar> - provides Dlog_$level and DlogS_$level convenience
-functions
+and the output might look something like:
+
+ names: "fREW"
+ "fRIOUX"
+ "fROOH"
+ "fRUE"
+ "fiSMBoC"
+
+=head3 Dlog_trace
+
+ my ($foo, $bar) = Dlog_trace { "entered method foo with args $_" } @_;
+
+=head3 Dlog_debug
+
+ Dlog_debug { "random data structure: $_" } { foo => $bar };
+
+=head3 Dlog_info
+
+ return Dlog_info { "html from method returned: $_" } "<html>...</html>";
+
+=head3 Dlog_warn
+
+ Dlog_warn { "probably invalid value: $_" } $foo;
+
+=head3 Dlog_error
+
+ Dlog_error { "non-numeric user input! ($_)" } $port;
+
+=head3 Dlog_fatal
+
+ Dlog_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
 
 =head1 AUTHOR
 
@@ -332,8 +378,3 @@ Perl 5 itself.
 
 =cut
 
-.:13:03:05:. <@mst> amazing how simple this stuff is once you get the paradigm
-.:13:03:13:. <@mst> also consider
-.:13:04:17:. <@mst> package Catalyst::Plugin::LogContextual; use Moose::Role; around
-                    handle_request => sub { my ($orig, $self) = (shift, shift); my @args = @_;
-                    with_logger { $self->log } sub { $self->$orig(@args) } };
