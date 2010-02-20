@@ -36,6 +36,7 @@ our @EXPORT_OK = (
 our %EXPORT_TAGS = (
    dlog => \@dlog,
    log  => \@log,
+   all  => [@dlog, @log],
 );
 
 sub import {
@@ -246,7 +247,38 @@ Log::Contextual - Super simple logging interface
 
 =head1 DESCRIPTION
 
-This module is a simple interface to extensible logging.
+This module is a simple interface to extensible logging.  It is bundled with a
+really basic logger, L<Log::Contextual::SimpleLogger>, but in general you
+should use a real logger instead of that.  For something more serious but not
+overly complicated, take a look at L<Log::Dispatchouli>.
+
+=head1 OPTIONS
+
+When you import this module you may use C<-logger> as a shortcut for
+L<set_logger>, for example:
+
+ use Log::Contextual::SimpleLogger;
+ use Log::Contextual qw{:dlog},
+   -logger => Log::Contextual::SimpleLogger->new({ levels => [qw{ debug }] });
+
+sometimes you might want to have the logger handy for other stuff, in which
+case you might try something like the following:
+
+ my $var_log;
+ BEGIN { $var_log = VarLogger->new }
+ use Log::Contextual qw{:dlog}, -logger => $var_log;
+
+=head1 A WORK IN PROGRESS
+
+This module is certainly not complete, but we will not break the interface
+lightly, so I would say it's safe to use in production code.  The main result
+from that at this point is that doing:
+
+ use Log::Contextual;
+
+will die as we do not yet know what the defaults should be.  If it turns out
+that nearly everyone uses the C<:log> tag and C<:dlog> is really rare, we'll
+probably make C<:log> the default.  But only time, and usage, will tell.
 
 =head1 FUNCTIONS
 
@@ -279,6 +311,8 @@ as with L<set_logger>, C<with_logger> will wrap C<$returning_logger> with a
 C<CodeRef> if needed.
 
 =head2 log_$level
+
+Import Tag: ":log"
 
 Arguments: CodeRef $returning_message
 
@@ -316,6 +350,8 @@ is called on the underlying C<$logger> object.  The basic pattern is:
  log_fatal { '1 is never equal to 0!' };
 
 =head2 Dlog_$level
+
+Import Tag: ":dlog"
 
 Arguments: CodeRef $returning_message, @args
 
@@ -360,6 +396,8 @@ and the output might look something like:
 
 =head2 DlogS_$level
 
+Import Tag: ":dlog"
+
 Arguments: CodeRef $returning_message, Item $arg
 
 All of the following six functions work the same as the related L<Dlog_$level>
@@ -372,7 +410,7 @@ all the C<@args>
 
 =head3 DlogS_trace
 
- my ($foo, $bar) = DlogS_trace { "entered method foo with first arg $_" } @_;
+ my ($foo, $bar) = DlogS_trace { "entered method foo with first arg $_" } $_[0], $_[1];
 
 =head3 DlogS_debug
 
@@ -393,6 +431,30 @@ all the C<@args>
 =head3 DlogS_fatal
 
  DlogS_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
+
+=head1 LOGGER INTERFACE
+
+Because this module is ultimately pretty looking glue (glittery?) with the
+awesome benefit of the Contextual part, users will often want to make their
+favorite logger work with it.  The following are the methods that should be
+implemented in the logger:
+
+ is_trace
+ is_debug
+ is_info
+ is_warn
+ is_error
+ is_fatal
+ trace
+ debug
+ info
+ warn
+ error
+ fatal
+
+The first six merely need to return true if that level is enabled.  The latter
+six take the results of whatever the user returned from their coderef and log
+them.  For a basic example see L<Log::Contextual::SimpleLogger>.
 
 =head1 AUTHOR
 

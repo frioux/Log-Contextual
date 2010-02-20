@@ -4,11 +4,10 @@ use warnings;
 use lib 't/lib';
 use VarLogger;
 use Test::More 'no_plan';
+my $var_log;
 
-use Log::Contextual qw{:dlog set_logger};
-
-my $var_log =  VarLogger->new;
-set_logger($var_log);
+BEGIN { $var_log = VarLogger->new }
+use Log::Contextual qw{:dlog}, -logger => $var_log;
 
 my @foo = Dlog_trace { "Look ma, data: $_" } qw{frew bar baz};
 ok( eq_array(\@foo, [qw{frew bar baz}]), 'Dlog_trace passes data through correctly');
