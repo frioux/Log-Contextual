@@ -31,17 +31,44 @@ SETLOGGER: {
 
 SETWITHLOGGER: {
    with_logger $var_logger1 => sub {
-      log_debug { 'nothing again!' }
+      log_debug { 'nothing again!' };
+      set_logger(sub { $var_logger3 });
+      log_debug { 'this is a set inside a with' };
    };
 
    is( $var_logger1->var, 'dnothing again!',
       'inner scoped logger works after using set_logger'
    );
 
+   is( $var_logger3->var, 'dthis is a set inside a with',
+      'set inside with works'
+   );
+
    log_debug { 'frioux!' };
    is( $var_logger3->var, 'dfrioux!',
       q{set_logger's logger comes back after scoped logger}
    );
+}
+
+VANILLA: {
+   log_trace { 'fiSMBoC' };
+   is( $var_logger3->var, 'tfiSMBoC', 'trace works');
+
+   log_debug { 'fiSMBoC' };
+   is( $var_logger3->var, 'dfiSMBoC', 'debug works');
+
+   log_info { 'fiSMBoC' };
+   is( $var_logger3->var, 'ifiSMBoC', 'info works');
+
+   log_warn { 'fiSMBoC' };
+   is( $var_logger3->var, 'wfiSMBoC', 'warn works');
+
+   log_error { 'fiSMBoC' };
+   is( $var_logger3->var, 'efiSMBoC', 'error works');
+
+   log_fatal { 'fiSMBoC' };
+   is( $var_logger3->var, 'ffiSMBoC', 'fatal works');
+
 }
 
 ok(!eval { Log::Contextual->import; 1 }, 'Blank Log::Contextual import dies');
