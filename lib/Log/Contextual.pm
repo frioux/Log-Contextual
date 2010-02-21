@@ -122,6 +122,61 @@ sub log_fatal (&@) {
 }
 
 
+sub logS_trace (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->trace($code->($value))
+      if $log->is_trace;
+   $value
+}
+
+sub logS_debug (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->debug($code->($value))
+      if $log->is_debug;
+   $value
+}
+
+sub logS_info (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->info($code->($value))
+      if $log->is_info;
+   $value
+}
+
+sub logS_warn (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->warn($code->($value))
+      if $log->is_warn;
+   $value
+}
+
+sub logS_error (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->error($code->($value))
+      if $log->is_error;
+   $value
+}
+
+sub logS_fatal (&$) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   my $value = shift;
+   $log->fatal($code->($value))
+      if $log->is_fatal;
+   $value
+}
+
+
 
 sub Dlog_trace (&@) {
   my $code = shift;
@@ -176,55 +231,49 @@ sub Dlog_fatal (&@) {
 sub DlogS_trace (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_trace {
+  logS_trace {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 sub DlogS_debug (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_debug {
+  logS_debug {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 sub DlogS_info (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_info {
+  logS_info {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 sub DlogS_warn (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_warn {
+  logS_warn {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 sub DlogS_error (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_error {
+  logS_error {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 sub DlogS_fatal (&$) {
   my $code = $_[0];
   my $value = $_[1];
-  log_fatal {
+  logS_fatal {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  };
-  $value
+  } $value
 }
 
 1;
