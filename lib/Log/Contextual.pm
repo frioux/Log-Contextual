@@ -71,40 +71,52 @@ sub with_logger {
    $_[1]->();
 }
 
-sub log_trace (&) {
-   my $log = $Get_Logger->();
-   $log->trace($_[0]->())
+sub log_trace (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->trace($code->(@_))
       if $log->is_trace;
+   @_
 }
 
-sub log_debug (&) {
-   my $log = $Get_Logger->();
-   $log->debug($_[0]->())
+sub log_debug (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->debug($code->(@_))
       if $log->is_debug;
+   @_
 }
 
-sub log_info (&) {
-   my $log = $Get_Logger->();
-   $log->info($_[0]->())
+sub log_info (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->info($code->(@_))
       if $log->is_info;
+   @_
 }
 
-sub log_warn (&) {
-   my $log = $Get_Logger->();
-   $log->warn($_[0]->())
+sub log_warn (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->warn($code->(@_))
       if $log->is_warn;
+   @_
 }
 
-sub log_error (&) {
-   my $log = $Get_Logger->();
-   $log->error($_[0]->())
+sub log_error (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->error($code->(@_))
       if $log->is_error;
+   @_
 }
 
-sub log_fatal (&) {
-   my $log = $Get_Logger->();
-   $log->fatal($_[0]->())
+sub log_fatal (&@) {
+   my $log  = $Get_Logger->();
+   my $code = shift;
+   $log->fatal($code->(@_))
       if $log->is_fatal;
+   @_
 }
 
 
