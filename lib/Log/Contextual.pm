@@ -372,7 +372,7 @@ probably make C<:log> the default.  But only time and usage will tell.
  my $logger = WarnLogger->new;
  set_logger $logger;
 
-Arguments: Ref|CodeRef $returning_logger
+Arguments: C<Ref|CodeRef $returning_logger>
 
 C<set_logger> will just set the current logger to whatever you pass it.  It
 expects a C<CodeRef>, but if you pass it something else it will wrap it in a
@@ -389,26 +389,38 @@ C<CodeRef> for you.
     }
  };
 
-Arguments: Ref|CodeRef $returning_logger, CodeRef $to_execute
+Arguments: C<Ref|CodeRef $returning_logger, CodeRef $to_execute>
 
 C<with_logger> sets the logger for the scope of the C<CodeRef> C<$to_execute>.
-As with L<set_logger>, C<with_logger> will wrap C<$returning_logger> with a
+As with L</set_logger>, C<with_logger> will wrap C<$returning_logger> with a
 C<CodeRef> if needed.
 
 =head2 log_$level
 
-Import Tag: ":log"
+Import Tag: C<:log>
 
-Arguments: CodeRef $returning_message
+Arguments: C<CodeRef $returning_message, @args>
 
 All of the following six functions work the same except that a different method
 is called on the underlying C<$logger> object.  The basic pattern is:
 
- sub log_$level (&) {
+ sub log_$level (&@) {
    if ($logger->is_$level) {
-     $logger->$level(shift->());
+     $logger->$level(shift->(@_));
    }
+   @_
  }
+
+Note that the function returns it's arguments.  This can be used in a number of
+ways, but often it's convenient just for partial inspection of passthrough data
+
+ my @friends = log_trace {
+   'friends list being generated, data from first friend: ' .
+     Dumper($_[0]->TO_JSON)
+ } generate_friend_list();
+
+If you want complete inspection of passthrough data, take a look at the
+L</Dlog_$level> functions.
 
 =head3 log_trace
 
@@ -434,13 +446,29 @@ is called on the underlying C<$logger> object.  The basic pattern is:
 
  log_fatal { '1 is never equal to 0!' };
 
+=head2 logS_$level
+
+Import Tag: C<:log>
+
+Arguments: C<CodeRef $returning_message, Item $arg>
+
+This is really just a special case of the L</log_$level> functions.  It forces
+scalar context when that is what you need.  Other than that it works exactly
+same:
+
+ my $friend = logS_trace {
+   'I only have one friend: ' .  Dumper($_[0]->TO_JSON)
+ } friend();
+
+See also: L</DlogS_$level>.
+
 =head2 Dlog_$level
 
-Import Tag: ":dlog"
+Import Tag: C<:dlog>
 
-Arguments: CodeRef $returning_message, @args
+Arguments: C<CodeRef $returning_message, @args>
 
-All of the following six functions work the same as their L<log_$level>
+All of the following six functions work the same as their L</log_$level>
 brethren, except they return what is passed into them and put the stringified
 (with L<Data::Dumper::Concise>) version of their args into C<$_>.  This means
 you can do cool things like the following:
@@ -481,42 +509,16 @@ and the output might look something like:
 
 =head2 DlogS_$level
 
-Import Tag: ":dlog"
+Import Tag: C<:dlog>
 
-Arguments: CodeRef $returning_message, Item $arg
+Arguments: C<CodeRef $returning_message, Item $arg>
 
-All of the following six functions work the same as the related L<Dlog_$level>
-functions, except they only take a single scalar after the
-C<$returning_message> instead of slurping up (and also setting C<wantarray>)
-all the C<@args>
+Like L</logS_$level>, these functions are a special case of L</Dlog_$level>.
+They only take a single scalar after the C<$returning_message> instead of
+slurping up (and also setting C<wantarray>) all the C<@args>
 
  my $pals_rs = DlogS_debug { "pals resultset: $_" }
    $schema->resultset('Pals')->search({ perlers => 1 });
-
-=head3 DlogS_trace
-
- my ($foo, $bar) =
-   DlogS_trace { "entered method foo with first arg $_" } $_[0], $_[1];
-
-=head3 DlogS_debug
-
- DlogS_debug { "random data structure: $_" } { foo => $bar };
-
-=head3 DlogS_info
-
- return DlogS_info { "html from method returned: $_" } "<html>...</html>";
-
-=head3 DlogS_warn
-
- DlogS_warn { "probably invalid value: $_" } $foo;
-
-=head3 DlogS_error
-
- DlogS_error { "non-numeric user input! ($_)" } $port;
-
-=head3 DlogS_fatal
-
- DlogS_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
 
 =head1 LOGGER INTERFACE
 
