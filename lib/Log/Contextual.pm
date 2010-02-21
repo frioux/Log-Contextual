@@ -182,7 +182,11 @@ sub Dlog_trace (&@) {
   my $code = shift;
   my @values = @_;
   return log_trace {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 
@@ -190,7 +194,11 @@ sub Dlog_debug (&@) {
   my $code = shift;
   my @values = @_;
   log_debug {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 
@@ -198,7 +206,11 @@ sub Dlog_info (&@) {
   my $code = shift;
   my @values = @_;
   log_info {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 
@@ -206,7 +218,11 @@ sub Dlog_warn (&@) {
   my $code = shift;
   my @values = @_;
   log_warn {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 
@@ -214,7 +230,11 @@ sub Dlog_error (&@) {
   my $code = shift;
   my @values = @_;
   log_error {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 
@@ -222,7 +242,11 @@ sub Dlog_fatal (&@) {
   my $code = shift;
   my @values = @_;
   log_fatal {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     if (@values) {
+        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+     } else {
+        do { local $_ = '()'; $code->() };
+     }
   } @values
 }
 

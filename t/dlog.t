@@ -132,3 +132,42 @@ fLook ma, data: [
 ]
 OUT
 }
+
+
+
+{
+   my @foo = Dlog_trace { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_trace passes nothing through correctly');
+   is( $var_log->var, 'tnothing: ()', 'Output for Dlog_trace is correct');
+}
+
+{
+   my @foo = Dlog_debug { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_debug passes nothing through correctly');
+   is( $var_log->var, 'dnothing: ()', 'Output for Dlog_debug is correct');
+}
+
+{
+   my @foo = Dlog_info { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_info passes nothing through correctly');
+   is( $var_log->var, 'inothing: ()', 'Output for Dlog_info is correct');
+}
+
+{
+   my @foo = Dlog_warn { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_warn passes nothing through correctly');
+   is( $var_log->var, 'wnothing: ()', 'Output for Dlog_warn is correct');
+}
+
+{
+   my @foo = Dlog_error { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_error passes nothing through correctly');
+   is( $var_log->var, 'enothing: ()', 'Output for Dlog_error is correct');
+}
+
+{
+   my @foo = Dlog_fatal { "nothing: $_" } ();
+   ok( eq_array(\@foo, []), 'Dlog_fatal passes nothing through correctly');
+   is( $var_log->var, 'fnothing: ()', 'Output for Dlog_fatal is correct');
+}
+
