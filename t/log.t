@@ -127,4 +127,5 @@ PASSTHROUGH: {
    is( $var_logger3->var, 'ffiSMBoC: foo', 'logS_fatal works with input');
    is( $val, 'foo', 'logS_fatal passes data through correctly');
 
+   ok(!eval "logS_error { 'frew' } 'bar', 'baz'; 1", 'logS_$level dies from too many args');
 }
