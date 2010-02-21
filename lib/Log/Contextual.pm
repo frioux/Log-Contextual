@@ -20,12 +20,12 @@ my @dlog = (qw(
  ));
 
 my @log = (qw(
-   log_debug
-   log_trace
-   log_warn
-   log_info
-   log_error
-   log_fatal
+   log_debug logS_debug
+   log_trace logS_trace
+   log_warn logS_warn
+   log_info logS_info
+   log_error logS_error
+   log_fatal logS_fatal
  ));
 
 our @EXPORT_OK = (
