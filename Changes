@@ -1,4 +1,7 @@
 ChangeLog for Log-Contextual
 
+0.00101 2010-02-21
+  - Fix tests to not need use lib (incorrect test failures)
+
 0.00100 2010-02-20
   - initial release
