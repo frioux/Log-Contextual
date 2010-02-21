@@ -71,6 +71,8 @@ sub with_logger {
    $_[1]->();
 }
 
+
+
 sub log_trace (&@) {
    my $log  = $Get_Logger->();
    my $code = shift;
@@ -129,6 +131,48 @@ sub Dlog_trace (&@) {
   } @values
 }
 
+sub Dlog_debug (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_debug {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  } @values
+}
+
+sub Dlog_info (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_info {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  } @values
+}
+
+sub Dlog_warn (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_warn {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  } @values
+}
+
+sub Dlog_error (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_error {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  } @values
+}
+
+sub Dlog_fatal (&@) {
+  my $code = shift;
+  my @values = @_;
+  log_fatal {
+     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
+  } @values
+}
+
+
+
 sub DlogS_trace (&$) {
   my $code = $_[0];
   my $value = $_[1];
@@ -136,14 +180,6 @@ sub DlogS_trace (&$) {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
   };
   $value
-}
-
-sub Dlog_debug (&@) {
-  my $code = shift;
-  my @values = @_;
-  log_debug {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-  } @values
 }
 
 sub DlogS_debug (&$) {
@@ -155,14 +191,6 @@ sub DlogS_debug (&$) {
   $value
 }
 
-sub Dlog_info (&@) {
-  my $code = shift;
-  my @values = @_;
-  log_info {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-  } @values
-}
-
 sub DlogS_info (&$) {
   my $code = $_[0];
   my $value = $_[1];
@@ -170,14 +198,6 @@ sub DlogS_info (&$) {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
   };
   $value
-}
-
-sub Dlog_warn (&@) {
-  my $code = shift;
-  my @values = @_;
-  log_warn {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-  } @values
 }
 
 sub DlogS_warn (&$) {
@@ -189,14 +209,6 @@ sub DlogS_warn (&$) {
   $value
 }
 
-sub Dlog_error (&@) {
-  my $code = shift;
-  my @values = @_;
-  log_error {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-  } @values
-}
-
 sub DlogS_error (&$) {
   my $code = $_[0];
   my $value = $_[1];
@@ -204,14 +216,6 @@ sub DlogS_error (&$) {
      do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
   };
   $value
-}
-
-sub Dlog_fatal (&@) {
-  my $code = shift;
-  my @values = @_;
-  log_fatal {
-     do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-  } @values
 }
 
 sub DlogS_fatal (&$) {
