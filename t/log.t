@@ -72,3 +72,59 @@ VANILLA: {
 }
 
 ok(!eval { Log::Contextual->import; 1 }, 'Blank Log::Contextual import dies');
+
+PASSTHROUGH: {
+   my @vars;
+
+   @vars = log_trace { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'tfiSMBoC: bar', 'log_trace works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_trace passes data through correctly');
+
+   @vars = log_debug { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'dfiSMBoC: bar', 'log_debug works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_debug passes data through correctly');
+
+   @vars = log_info { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'ifiSMBoC: bar', 'log_info works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_info passes data through correctly');
+
+   @vars = log_warn { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'wfiSMBoC: bar', 'log_warn works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_warn passes data through correctly');
+
+   @vars = log_error { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'efiSMBoC: bar', 'log_error works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_error passes data through correctly');
+
+   @vars = log_fatal { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
+   is( $var_logger3->var, 'ffiSMBoC: bar', 'log_fatal works with input');
+   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_fatal passes data through correctly');
+
+
+
+   my $val;
+   $val = logS_trace { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'tfiSMBoC: foo', 'logS_trace works with input');
+   is( $val, 'foo', 'logS_trace passes data through correctly');
+
+   $val = logS_debug { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'dfiSMBoC: foo', 'logS_debug works with input');
+   is( $val, 'foo', 'logS_debug passes data through correctly');
+
+   $val = logS_info { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'ifiSMBoC: foo', 'logS_info works with input');
+   is( $val, 'foo', 'logS_info passes data through correctly');
+
+   $val = logS_warn { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'wfiSMBoC: foo', 'logS_warn works with input');
+   is( $val, 'foo', 'logS_warn passes data through correctly');
+
+   $val = logS_error { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'efiSMBoC: foo', 'logS_error works with input');
+   is( $val, 'foo', 'logS_error passes data through correctly');
+
+   $val = logS_fatal { 'fiSMBoC: ' . $_[0] } 'foo';
+   is( $var_logger3->var, 'ffiSMBoC: foo', 'logS_fatal works with input');
+   is( $val, 'foo', 'logS_fatal passes data through correctly');
+
+}
