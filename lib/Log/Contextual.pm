@@ -7,6 +7,7 @@ our $VERSION = '0.00100';
 
 require Exporter;
 use Data::Dumper::Concise;
+use Scalar::Util 'blessed';
 
 BEGIN { our @ISA = qw(Exporter) }
 
@@ -58,15 +59,21 @@ our $Get_Logger;
 
 sub set_logger {
    my $logger = $_[0];
-   $logger = do { my $l = $logger; sub { $l } }
-      if ref $logger ne 'CODE';
+   if(ref $logger ne 'CODE') {
+      die 'logger was not a CodeRef or a logger object.  Please try again.'
+         unless blessed($logger);
+      $logger = do { my $l = $logger; sub { $l } }
+   }
    $Get_Logger = $logger;
 }
 
 sub with_logger {
    my $logger = $_[0];
-   $logger = do { my $l = $logger; sub { $l } }
-      if ref $logger ne 'CODE';
+   if(ref $logger ne 'CODE') {
+      die 'logger was not a CodeRef or a logger object.  Please try again.'
+         unless blessed($logger);
+      $logger = do { my $l = $logger; sub { $l } }
+   }
    local $Get_Logger = $logger;
    $_[1]->();
 }
@@ -310,12 +317,15 @@ Log::Contextual - Simple logging interface with a contextual log
 
 =head1 SYNOPSIS
 
- use Log::Log4perl;
  use Log::Contextual qw( :log :dlog set_logger with_logger );
+ use Log::Contextual::SimpleLogger;
+ use Log::Log4perl ':easy';
+ Log::Log4perl->easy_init($DEBUG);
 
- my $logger  = sub { Log::Log4perl->get_logger };
 
- set_logger { $logger };
+ my $logger  = Log::Log4perl->get_logger;
+
+ set_logger $logger;
 
  log_debug { 'program started' };
 
@@ -329,6 +339,8 @@ Log::Contextual - Simple logging interface with a contextual log
      log_trace { 'foo left' };
    });
  }
+
+ foo();
 
 =head1 DESCRIPTION
 
