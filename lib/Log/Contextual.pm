@@ -10,27 +10,27 @@ use Data::Dumper::Concise;
 
 BEGIN { our @ISA = qw(Exporter) }
 
-my @dlog = (qw{
+my @dlog = (qw(
    Dlog_debug DlogS_debug
    Dlog_trace DlogS_trace
    Dlog_warn DlogS_warn
    Dlog_info DlogS_info
    Dlog_error DlogS_error
    Dlog_fatal DlogS_fatal
-});
+ ));
 
-my @log = (qw{
+my @log = (qw(
    log_debug
    log_trace
    log_warn
    log_info
    log_error
    log_fatal
-});
+ ));
 
 our @EXPORT_OK = (
    @dlog, @log,
-   qw{set_logger with_logger}
+   qw( set_logger with_logger )
 );
 
 our %EXPORT_TAGS = (
@@ -227,22 +227,24 @@ Log::Contextual - Simple logging interface with a contextual log
 
 =head1 SYNOPSIS
 
- use Log::Contextual qw{:log set_logger with_logger};
+ use Log::Log4perl;
+ use Log::Contextual qw( :log :dlog set_logger with_logger );
 
- my $logger  = Log::Contextual::SimpleLogger->new({ levels => [qw{debug}]});
+ my $logger  = sub { Log::Log4perl->get_logger };
 
  set_logger { $logger };
 
- log_debug { "program started" };
+ log_debug { 'program started' };
 
  sub foo {
-   with_logger Log::Contextual::SimpleLogger->new({
-       levels => [qw{trace debug}]
+   with_logger(Log::Contextual::SimpleLogger->new({
+       levels => [qw( trace debug )]
      }) => sub {
      log_trace { 'foo entered' };
+     my ($foo, $bar) = Dlog_trace { "params for foo: $_" } @_;
      # ...
      log_trace { 'foo left' };
-   };
+   });
  }
 
 =head1 DESCRIPTION
@@ -258,15 +260,15 @@ When you import this module you may use C<-logger> as a shortcut for
 L<set_logger>, for example:
 
  use Log::Contextual::SimpleLogger;
- use Log::Contextual qw{:dlog},
-   -logger => Log::Contextual::SimpleLogger->new({ levels => [qw{ debug }] });
+ use Log::Contextual qw( :dlog ),
+   -logger => Log::Contextual::SimpleLogger->new({ levels => [qw( debug )] });
 
 sometimes you might want to have the logger handy for other stuff, in which
 case you might try something like the following:
 
  my $var_log;
  BEGIN { $var_log = VarLogger->new }
- use Log::Contextual qw{:dlog}, -logger => $var_log;
+ use Log::Contextual qw( :dlog ), -logger => $var_log;
 
 =head1 A WORK IN PROGRESS
 
@@ -278,7 +280,7 @@ from that at this point is that doing:
 
 will die as we do not yet know what the defaults should be.  If it turns out
 that nearly everyone uses the C<:log> tag and C<:dlog> is really rare, we'll
-probably make C<:log> the default.  But only time, and usage, will tell.
+probably make C<:log> the default.  But only time and usage will tell.
 
 =head1 FUNCTIONS
 
@@ -307,7 +309,7 @@ C<CodeRef> for you.
 Arguments: Ref|CodeRef $returning_logger, CodeRef $to_execute
 
 C<with_logger> sets the logger for the scope of the C<CodeRef> C<$to_execute>.
-as with L<set_logger>, C<with_logger> will wrap C<$returning_logger> with a
+As with L<set_logger>, C<with_logger> will wrap C<$returning_logger> with a
 C<CodeRef> if needed.
 
 =head2 log_$level
@@ -355,8 +357,8 @@ Import Tag: ":dlog"
 
 Arguments: CodeRef $returning_message, @args
 
-All of the following six functions work the same as their L<log_$level> brethren,
-except they return what is passed into them and as a bonus put the stringified
+All of the following six functions work the same as their L<log_$level>
+brethren, except they return what is passed into them and put the stringified
 (with L<Data::Dumper::Concise>) version of their args into C<$_>.  This means
 you can do cool things like the following:
 
@@ -372,7 +374,7 @@ and the output might look something like:
 
 =head3 Dlog_trace
 
- my ($foo, $bar) = Dlog_trace { "entered method foo with args $_" } @_;
+ my ($foo, $bar) = Dlog_trace { "entered method foo with args: $_" } @_;
 
 =head3 Dlog_debug
 
@@ -410,7 +412,8 @@ all the C<@args>
 
 =head3 DlogS_trace
 
- my ($foo, $bar) = DlogS_trace { "entered method foo with first arg $_" } $_[0], $_[1];
+ my ($foo, $bar) =
+   DlogS_trace { "entered method foo with first arg $_" } $_[0], $_[1];
 
 =head3 DlogS_debug
 

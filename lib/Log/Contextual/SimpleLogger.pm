@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 {
-  for my $name (qw[ trace debug info warn error fatal ]) {
+  for my $name (qw( trace debug info warn error fatal )) {
 
     no strict 'refs';
 
@@ -49,8 +49,8 @@ Log::Contextual::SimpleLogger - Super simple logger made for playing with Log::C
 
 =head1 SYNOPSIS
 
- use Log::Contextual qw{:log},
-   -logger => Log::Contextual::SimpleLogger->new({ levels => [qw{debug}]});
+ use Log::Contextual qw( :log ),
+   -logger => Log::Contextual::SimpleLogger->new({ levels => [qw( debug )]});
 
  log_info { 'program started' }; # no-op because info is not in levels
  sub foo {
@@ -72,7 +72,7 @@ L<Log::Dispatchouli>.
 Arguments: Dict[ levels => ArrayRef[Str], coderef => Optional[CodeRef] ] $conf
 
  my $l = Log::Contextual::SimpleLogger->new({
-   levels => [qw{ info warn }],
+   levels => [qw( info warn )],
    coderef => sub { print @_ }, # the default prints to STDERR
  });
 
