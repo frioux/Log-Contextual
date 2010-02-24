@@ -49,6 +49,7 @@ Log::Contextual::SimpleLogger - Super simple logger made for playing with Log::C
 
 =head1 SYNOPSIS
 
+ use Log::Contextual::SimpleLogger;
  use Log::Contextual qw( :log ),
    -logger => Log::Contextual::SimpleLogger->new({ levels => [qw( debug )]});
 
@@ -69,7 +70,7 @@ L<Log::Dispatchouli>.
 
 =head2 new
 
-Arguments: Dict[ levels => ArrayRef[Str], coderef => Optional[CodeRef] ] $conf
+Arguments: C<< Dict[ levels => ArrayRef[Str], coderef => Optional[CodeRef] ] $conf >>
 
  my $l = Log::Contextual::SimpleLogger->new({
    levels => [qw( info warn )],
@@ -90,7 +91,7 @@ Levels may contain:
 
 =head2 $level
 
-Arguments: @anything
+Arguments: C<@anything>
 
 All of the following six methods work the same.  The basic pattern is:
 
