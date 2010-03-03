@@ -22,6 +22,22 @@ my $var_logger3 = Log::Contextual::SimpleLogger->new({
    coderef => sub { $var3 = shift },
 });
 
+SETLOGGER: {
+   set_logger(sub { $var_logger3 });
+   log_debug { 'set_logger' };
+   is( $var3, "[debug] set_logger\n", 'set logger works' );
+}
+
+SETLOGGERTWICE: {
+   my $foo;
+   local $SIG{__WARN__} = sub { $foo = shift };
+   set_logger(sub { $var_logger3 });
+   like(
+      $foo, qr/set_logger \(or -logger\) called more than once!  This is a bad idea! at/,
+      'set_logger twice warns correctly'
+   );
+}
+
 WITHLOGGER: {
    with_logger sub { $var_logger2 } => sub {
 
@@ -36,15 +52,11 @@ WITHLOGGER: {
    is( $var2, "[debug] frew!\n", 'outer scoped logger works' );
 }
 
-SETLOGGER: {
-   set_logger(sub { $var_logger3 });
-   log_debug { 'set_logger' };
-   is( $var3, "[debug] set_logger\n", 'set logger works' );
-}
-
 SETWITHLOGGER: {
    with_logger $var_logger1 => sub {
       log_debug { 'nothing again!' };
+      # do this just so the following set_logger won't warn
+      local $SIG{__WARN__} = sub {};
       set_logger(sub { $var_logger3 });
       log_debug { 'this is a set inside a with' };
    };
