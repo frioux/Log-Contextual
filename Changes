@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+  - Added WarnLogger for libraries
   - Warn if set_logger is called more than once
   - Fix tiny POD errors
 
