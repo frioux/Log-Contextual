@@ -1,7 +1,4 @@
 # add example for Log::Dispatchouli
-# make wrapper for Log::Log4perl that fixes callstack:
-#   < mst> sub debug { local $Log::Log4perl::caller_depth =
-#          $Log::Log4perl::caller_depth + 3; shift->{l4p}->debug(@_) }
 #
 #   default logger stuff
 #   < mst> there are two cases
