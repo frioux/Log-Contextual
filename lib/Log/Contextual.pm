@@ -1,16 +1,5 @@
 # add example for Log::Dispatchouli
 #
-#   default logger stuff
-#   < mst> there are two cases
-#   < mst> (1) application code: expects an app logger to be set and fuck you if it
-#          isn't
-#   < mst> (i.e. die screaming if it gets called without a logger setup)
-#   < frew> sure
-#   < mst> (2) library code: uses an app logger IF exists, but if not, needs to do ...
-#          something sensible
-#   < mst> but doesn't want to affect the rest of the world doing so
-#   < frew> sounds like library code wants default_logger which is a packageish logger?
-#
 # make basic warn logger
 
 
@@ -65,7 +54,9 @@ sub import {
       if ( $_[$idx] eq '-logger' ) {
          set_logger($_[$idx + 1]);
          splice @_, $idx, 2;
-         last;
+      } elsif ( $_[$idx] eq '-default_logger' ) {
+         set_default_logger_for(scalar caller, $_[$idx + 1]);
+         splice @_, $idx, 2;
       }
    }
    $package->export_to_level(1, $package, @_);
@@ -74,13 +65,15 @@ sub import {
 our $Get_Logger;
 our %Default_Logger;
 
+sub _set_default_logger_for { $Default_Logger{$_[0]} = $_[1] }
+
 sub _get_logger($) {
    my $package = shift;
    (
       $Get_Logger ||
       $Default_Logger{$package} ||
       die q( no logger set!  you can't try to log something without a logger! )
-   )->();
+   )->($package);
 }
 
 sub set_logger {
@@ -417,7 +410,9 @@ Arguments: C<Ref|CodeRef $returning_logger>
 
 C<set_logger> will just set the current logger to whatever you pass it.  It
 expects a C<CodeRef>, but if you pass it something else it will wrap it in a
-C<CodeRef> for you.
+C<CodeRef> for you.  C<set_logger> is really meant only to be called from a
+top-level script.  To avoid foot-shooting the function will warn if you call it
+more than once.
 
 =head2 with_logger
 
