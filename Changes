@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+  - Warn if set_logger is called more than once
+  - Fix tiny POD errors
+
 0.00101 2010-02-21
   - Fix tests to not need use lib (incorrect test failures)
 
