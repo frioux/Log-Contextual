@@ -382,6 +382,8 @@ overly complicated, take a look at L<Log::Dispatchouli>.
 
 =head1 OPTIONS
 
+=head2 -logger
+
 When you import this module you may use C<-logger> as a shortcut for
 L<set_logger>, for example:
 
@@ -395,6 +397,23 @@ case you might try something like the following:
  my $var_log;
  BEGIN { $var_log = VarLogger->new }
  use Log::Contextual qw( :dlog ), -logger => $var_log;
+
+=head2 -default_logger
+
+The C<-default_logger> import option is similar to the C<-logger> import option
+except C<-default_logger> sets the the default logger for the current package.
+
+Basically it sets the logger to be used if C<set_logger> is never called; so
+
+ package My::Package;
+ use Log::Contextual::SimpleLogger;
+ use Log::Contextual qw( :log ),
+   -default_logger => Log::Contextual::WarnLogger->new({
+      env_var => 'MY_PACKAGE'
+   });
+
+If you are interested in using this package for a module you are putting on
+CPAN we recommend L<Log::Contextual::WarnLogger> for your default logger.
 
 =head1 A WORK IN PROGRESS
 
