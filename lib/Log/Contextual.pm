@@ -382,12 +382,27 @@ Log::Contextual - Simple logging interface with a contextual log
 
  foo();
 
+Beginning with version 1.008 L<Log::Dispatchouli> also works out of the box
+with C<Log::Contextual>:
+
+ use Log::Contextual qw( :log :dlog set_logger );
+ use Log::Dispatchouli;
+ my $ld = Log::Dispatchouli->new({
+    ident     => 'slrtbrfst',
+    to_stderr => 1,
+    debug     => 1,
+ });
+
+ set_logger $ld;
+
+ log_debug { 'program started' };
+
 =head1 DESCRIPTION
 
 This module is a simple interface to extensible logging.  It is bundled with a
 really basic logger, L<Log::Contextual::SimpleLogger>, but in general you
 should use a real logger instead of that.  For something more serious but not
-overly complicated, take a look at L<Log::Dispatchouli>.
+overly complicated, try L<Log::Dispatchouli> (see L</SYNOPSIS> for example.)
 
 =head1 OPTIONS
 
