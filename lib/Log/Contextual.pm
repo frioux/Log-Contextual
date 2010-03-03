@@ -51,11 +51,12 @@ sub import {
       unless @_;
 
    for my $idx ( 0 .. $#_ ) {
-      if ( $_[$idx] eq '-logger' ) {
+      my $val = $_[$idx];
+      if ( defined $val && $val eq '-logger' ) {
          set_logger($_[$idx + 1]);
          splice @_, $idx, 2;
-      } elsif ( $_[$idx] eq '-default_logger' ) {
-         set_default_logger_for(scalar caller, $_[$idx + 1]);
+      } elsif ( defined $val && $val eq '-default_logger' ) {
+         _set_default_logger_for(scalar caller, $_[$idx + 1]);
          splice @_, $idx, 2;
       }
    }
@@ -65,7 +66,15 @@ sub import {
 our $Get_Logger;
 our %Default_Logger;
 
-sub _set_default_logger_for { $Default_Logger{$_[0]} = $_[1] }
+sub _set_default_logger_for {
+   my $logger = $_[1];
+   if(ref $logger ne 'CODE') {
+      die 'logger was not a CodeRef or a logger object.  Please try again.'
+         unless blessed($logger);
+      $logger = do { my $l = $logger; sub { $l } }
+   }
+   $Default_Logger{$_[0]} = $logger
+}
 
 sub _get_logger($) {
    my $package = shift;
