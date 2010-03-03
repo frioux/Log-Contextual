@@ -1,11 +1,9 @@
-# add example for Log::Dispatchouli
-
 package Log::Contextual;
 
 use strict;
 use warnings;
 
-our $VERSION = '0.00101';
+our $VERSION = '0.00200';
 
 require Exporter;
 use Data::Dumper::Concise;
