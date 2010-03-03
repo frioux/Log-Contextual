@@ -1,3 +1,22 @@
+# add example for Log::Dispatchouli
+# make wrapper for Log::Log4perl that fixes callstack:
+#   < mst> sub debug { local $Log::Log4perl::caller_depth =
+#          $Log::Log4perl::caller_depth + 3; shift->{l4p}->debug(@_) }
+#
+#   default logger stuff
+#   < mst> there are two cases
+#   < mst> (1) application code: expects an app logger to be set and fuck you if it
+#          isn't
+#   < mst> (i.e. die screaming if it gets called without a logger setup)
+#   < frew> sure
+#   < mst> (2) library code: uses an app logger IF exists, but if not, needs to do ...
+#          something sensible
+#   < mst> but doesn't want to affect the rest of the world doing so
+#   < frew> sounds like library code wants default_logger which is a packageish logger?
+#
+# make basic warn logger
+
+
 package Log::Contextual;
 
 use strict;
@@ -56,6 +75,16 @@ sub import {
 }
 
 our $Get_Logger;
+our %Default_Logger;
+
+sub _get_logger($) {
+   my $package = shift;
+   (
+      $Get_Logger ||
+      $Default_Logger{$package} ||
+      die q( no logger set!  you can't try to log something without a logger! )
+   )->();
+}
 
 sub set_logger {
    my $logger = $_[0];
@@ -64,6 +93,9 @@ sub set_logger {
          unless blessed($logger);
       $logger = do { my $l = $logger; sub { $l } }
    }
+
+   warn 'set_logger (or -logger) called more than once!  This is a bad idea!'
+      if $Get_Logger;
    $Get_Logger = $logger;
 }
 
@@ -81,7 +113,7 @@ sub with_logger {
 
 
 sub log_trace (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->trace($code->(@_))
       if $log->is_trace;
@@ -89,7 +121,7 @@ sub log_trace (&@) {
 }
 
 sub log_debug (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->debug($code->(@_))
       if $log->is_debug;
@@ -97,7 +129,7 @@ sub log_debug (&@) {
 }
 
 sub log_info (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->info($code->(@_))
       if $log->is_info;
@@ -105,7 +137,7 @@ sub log_info (&@) {
 }
 
 sub log_warn (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->warn($code->(@_))
       if $log->is_warn;
@@ -113,7 +145,7 @@ sub log_warn (&@) {
 }
 
 sub log_error (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->error($code->(@_))
       if $log->is_error;
@@ -121,7 +153,7 @@ sub log_error (&@) {
 }
 
 sub log_fatal (&@) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    $log->fatal($code->(@_))
       if $log->is_fatal;
@@ -130,7 +162,7 @@ sub log_fatal (&@) {
 
 
 sub logS_trace (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->trace($code->($value))
@@ -139,7 +171,7 @@ sub logS_trace (&$) {
 }
 
 sub logS_debug (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->debug($code->($value))
@@ -148,7 +180,7 @@ sub logS_debug (&$) {
 }
 
 sub logS_info (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->info($code->($value))
@@ -157,7 +189,7 @@ sub logS_info (&$) {
 }
 
 sub logS_warn (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->warn($code->($value))
@@ -166,7 +198,7 @@ sub logS_warn (&$) {
 }
 
 sub logS_error (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->error($code->($value))
@@ -175,7 +207,7 @@ sub logS_error (&$) {
 }
 
 sub logS_fatal (&$) {
-   my $log  = $Get_Logger->();
+   my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
    $log->fatal($code->($value))
