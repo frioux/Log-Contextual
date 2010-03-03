@@ -1,7 +1,4 @@
 # add example for Log::Dispatchouli
-#
-# make basic warn logger
-
 
 package Log::Contextual;
 
@@ -409,7 +406,7 @@ Basically it sets the logger to be used if C<set_logger> is never called; so
  use Log::Contextual::SimpleLogger;
  use Log::Contextual qw( :log ),
    -default_logger => Log::Contextual::WarnLogger->new({
-      env_var => 'MY_PACKAGE'
+      env_prefix => 'MY_PACKAGE'
    });
 
 If you are interested in using this package for a module you are putting on
