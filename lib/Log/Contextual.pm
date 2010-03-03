@@ -111,6 +111,7 @@ sub with_logger {
 sub log_trace (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->trace($code->(@_))
       if $log->is_trace;
    @_
@@ -119,6 +120,7 @@ sub log_trace (&@) {
 sub log_debug (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->debug($code->(@_))
       if $log->is_debug;
    @_
@@ -127,6 +129,7 @@ sub log_debug (&@) {
 sub log_info (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->info($code->(@_))
       if $log->is_info;
    @_
@@ -135,6 +138,7 @@ sub log_info (&@) {
 sub log_warn (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->warn($code->(@_))
       if $log->is_warn;
    @_
@@ -143,6 +147,7 @@ sub log_warn (&@) {
 sub log_error (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->error($code->(@_))
       if $log->is_error;
    @_
@@ -151,6 +156,7 @@ sub log_error (&@) {
 sub log_fatal (&@) {
    my $log  = _get_logger( caller );
    my $code = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->fatal($code->(@_))
       if $log->is_fatal;
    @_
@@ -161,6 +167,7 @@ sub logS_trace (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->trace($code->($value))
       if $log->is_trace;
    $value
@@ -170,6 +177,7 @@ sub logS_debug (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->debug($code->($value))
       if $log->is_debug;
    $value
@@ -179,6 +187,7 @@ sub logS_info (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->info($code->($value))
       if $log->is_info;
    $value
@@ -188,6 +197,7 @@ sub logS_warn (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->warn($code->($value))
       if $log->is_warn;
    $value
@@ -197,6 +207,7 @@ sub logS_error (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->error($code->($value))
       if $log->is_error;
    $value
@@ -206,6 +217,7 @@ sub logS_fatal (&$) {
    my $log  = _get_logger( caller );
    my $code = shift;
    my $value = shift;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
    $log->fatal($code->($value))
       if $log->is_fatal;
    $value

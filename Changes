@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+  - make Log::Log4perl work out of the box
   - Added WarnLogger for libraries
   - Warn if set_logger is called more than once
   - Fix tiny POD errors
