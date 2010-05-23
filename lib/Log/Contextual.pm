@@ -3,7 +3,7 @@ package Log::Contextual;
 use strict;
 use warnings;
 
-our $VERSION = '0.00200';
+our $VERSION = '0.00201';
 
 require Exporter;
 use Data::Dumper::Concise;

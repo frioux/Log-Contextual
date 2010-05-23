@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.00201 2010-03-04
+  - I left a needed file for testing out of the MANIFEST; fixing :-/
+
 0.00200 2010-03-03
   - add example for Log::Dispatchouli since it works nicely now
   - make Log::Log4perl work out of the box
