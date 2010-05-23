@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.00202 2010-05-23
+  - Fix a bug that caused Dlog and friends not to work with a default
+
 0.00201 2010-03-04
   - I left a needed file for testing out of the MANIFEST; fixing :-/
 

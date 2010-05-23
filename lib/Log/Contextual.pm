@@ -104,245 +104,110 @@ sub with_logger {
    $_[1]->();
 }
 
+sub _do_log {
+   my $level  = shift;
+   my $logger = shift;
+   my $code   = shift;
+   my @values = @_;
 
-
-sub log_trace (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->trace($code->(@_))
-      if $log->is_trace;
-   @_
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 2;
+   $logger->$level($code->(@_))
+      if $logger->${\"is_$level"};
+   @values
 }
 
-sub log_debug (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->debug($code->(@_))
-      if $log->is_debug;
-   @_
-}
+sub _do_logS {
+   my $level  = shift;
+   my $logger = shift;
+   my $code   = shift;
+   my $value  = shift;
 
-sub log_info (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->info($code->(@_))
-      if $log->is_info;
-   @_
-}
-
-sub log_warn (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->warn($code->(@_))
-      if $log->is_warn;
-   @_
-}
-
-sub log_error (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->error($code->(@_))
-      if $log->is_error;
-   @_
-}
-
-sub log_fatal (&@) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->fatal($code->(@_))
-      if $log->is_fatal;
-   @_
-}
-
-
-sub logS_trace (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->trace($code->($value))
-      if $log->is_trace;
+   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 2;
+   $logger->$level($code->($value))
+      if $logger->${\"is_$level"};
    $value
 }
 
-sub logS_debug (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->debug($code->($value))
-      if $log->is_debug;
-   $value
-}
+sub log_trace (&@) { _do_log( trace => _get_logger( caller ), shift @_, @_) }
+sub log_debug (&@) { _do_log( debug => _get_logger( caller ), shift @_, @_) }
+sub log_info  (&@) { _do_log( info  => _get_logger( caller ), shift @_, @_) }
+sub log_warn  (&@) { _do_log( warn  => _get_logger( caller ), shift @_, @_) }
+sub log_error (&@) { _do_log( error => _get_logger( caller ), shift @_, @_) }
+sub log_fatal (&@) { _do_log( fatal => _get_logger( caller ), shift @_, @_) }
 
-sub logS_info (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->info($code->($value))
-      if $log->is_info;
-   $value
-}
-
-sub logS_warn (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->warn($code->($value))
-      if $log->is_warn;
-   $value
-}
-
-sub logS_error (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->error($code->($value))
-      if $log->is_error;
-   $value
-}
-
-sub logS_fatal (&$) {
-   my $log  = _get_logger( caller );
-   my $code = shift;
-   my $value = shift;
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 1;
-   $log->fatal($code->($value))
-      if $log->is_fatal;
-   $value
-}
-
+sub logS_trace (&$) { _do_logS( trace => _get_logger( caller ), $_[0], $_[1]) }
+sub logS_debug (&$) { _do_logS( debug => _get_logger( caller ), $_[0], $_[1]) }
+sub logS_info  (&$) { _do_logS( info  => _get_logger( caller ), $_[0], $_[1]) }
+sub logS_warn  (&$) { _do_logS( warn  => _get_logger( caller ), $_[0], $_[1]) }
+sub logS_error (&$) { _do_logS( error => _get_logger( caller ), $_[0], $_[1]) }
+sub logS_fatal (&$) { _do_logS( fatal => _get_logger( caller ), $_[0], $_[1]) }
 
 
 sub Dlog_trace (&@) {
   my $code = shift;
-  my @values = @_;
-  return log_trace {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( trace => _get_logger( caller ), $code, @_ );
 }
 
 sub Dlog_debug (&@) {
   my $code = shift;
-  my @values = @_;
-  log_debug {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( debug => _get_logger( caller ), $code, @_ );
 }
 
 sub Dlog_info (&@) {
   my $code = shift;
-  my @values = @_;
-  log_info {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( info => _get_logger( caller ), $code, @_ );
 }
 
 sub Dlog_warn (&@) {
   my $code = shift;
-  my @values = @_;
-  log_warn {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( warn => _get_logger( caller ), $code, @_ );
 }
 
 sub Dlog_error (&@) {
   my $code = shift;
-  my @values = @_;
-  log_error {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( error => _get_logger( caller ), $code, @_ );
 }
 
 sub Dlog_fatal (&@) {
   my $code = shift;
-  my @values = @_;
-  log_fatal {
-     if (@values) {
-        do { local $_ = Data::Dumper::Concise::Dumper @values; $code->() };
-     } else {
-        do { local $_ = '()'; $code->() };
-     }
-  } @values
+  local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+  return _do_log( fatal => _get_logger( caller ), $code, @_ );
 }
-
 
 
 sub DlogS_trace (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_trace {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( trace => _get_logger( caller ), $_[0], $_[1] )
 }
 
 sub DlogS_debug (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_debug {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( debug => _get_logger( caller ), $_[0], $_[1] )
 }
 
 sub DlogS_info (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_info {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( info => _get_logger( caller ), $_[0], $_[1] )
 }
 
 sub DlogS_warn (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_warn {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( warn => _get_logger( caller ), $_[0], $_[1] )
 }
 
 sub DlogS_error (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_error {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( error => _get_logger( caller ), $_[0], $_[1] )
 }
 
 sub DlogS_fatal (&$) {
-  my $code = $_[0];
-  my $value = $_[1];
-  logS_fatal {
-     do { local $_ = Data::Dumper::Concise::Dumper $value; $code->() };
-  } $value
+  local $_ = Data::Dumper::Concise::Dumper $_[1];
+  _do_logS( fatal => _get_logger( caller ), $_[0], $_[1] )
 }
 
 1;

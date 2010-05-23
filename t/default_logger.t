@@ -29,10 +29,13 @@ BEGIN {
 
 {
    package J;
-   use Log::Contextual qw{:log with_logger set_logger}, -default_logger => $var_logger3;
+   use Log::Contextual qw{:dlog :log with_logger set_logger}, -default_logger => $var_logger3;
 
    sub foo {
       log_debug { 'bar' };
+   }
+   sub bar {
+      Dlog_debug { "bar: $_" } 'frew';
    }
 }
 
@@ -49,6 +52,8 @@ K::foo;
 
 is($var2, "[debug] foo\n", 'default_logger works for one package');
 is($var3, "[debug] bar\n", 'default_logger works for both packages');
+J::bar;
+is($var3, qq([debug] bar: "frew"\n), 'default_logger works for one package');
 $var2 = '';
 set_logger($var_logger1);
 
