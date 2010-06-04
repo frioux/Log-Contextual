@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.00300 2010-06-03
+  - Add -package_logger import option
+
 0.00202 2010-05-23
   - Fix a bug that caused Dlog and friends not to work with a default
 

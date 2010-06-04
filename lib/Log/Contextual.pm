@@ -50,6 +50,9 @@ sub import {
       if ( defined $val && $val eq '-logger' ) {
          set_logger($_[$idx + 1]);
          splice @_, $idx, 2;
+      } elsif ( defined $val && $val eq '-package_logger' ) {
+         _set_package_logger_for(scalar caller, $_[$idx + 1]);
+         splice @_, $idx, 2;
       } elsif ( defined $val && $val eq '-default_logger' ) {
          _set_default_logger_for(scalar caller, $_[$idx + 1]);
          splice @_, $idx, 2;
@@ -60,6 +63,7 @@ sub import {
 
 our $Get_Logger;
 our %Default_Logger;
+our %Package_Logger;
 
 sub _set_default_logger_for {
    my $logger = $_[1];
@@ -71,9 +75,20 @@ sub _set_default_logger_for {
    $Default_Logger{$_[0]} = $logger
 }
 
+sub _set_package_logger_for {
+   my $logger = $_[1];
+   if(ref $logger ne 'CODE') {
+      die 'logger was not a CodeRef or a logger object.  Please try again.'
+         unless blessed($logger);
+      $logger = do { my $l = $logger; sub { $l } }
+   }
+   $Package_Logger{$_[0]} = $logger
+}
+
 sub _get_logger($) {
    my $package = shift;
    (
+      $Package_Logger{$package} ||
       $Get_Logger ||
       $Default_Logger{$package} ||
       die q( no logger set!  you can't try to log something without a logger! )
@@ -285,10 +300,28 @@ case you might try something like the following:
  BEGIN { $var_log = VarLogger->new }
  use Log::Contextual qw( :dlog ), -logger => $var_log;
 
+=head2 -package_logger
+
+The C<-package_logger> import option is similar to the C<-logger> import option
+except C<-package_logger> sets the the logger for the current package.
+
+Unlike L</-default_logger>, C<-package_logger> cannot be overridden with
+L</set_logger>.
+
+ package My::Package;
+ use Log::Contextual::SimpleLogger;
+ use Log::Contextual qw( :log ),
+   -package_logger => Log::Contextual::WarnLogger->new({
+      env_prefix => 'MY_PACKAGE'
+   });
+
+If you are interested in using this package for a module you are putting on
+CPAN we recommend L<Log::Contextual::WarnLogger> for your package logger.
+
 =head2 -default_logger
 
 The C<-default_logger> import option is similar to the C<-logger> import option
-except C<-default_logger> sets the the default logger for the current package.
+except C<-default_logger> sets the the B<default> logger for the current package.
 
 Basically it sets the logger to be used if C<set_logger> is never called; so
 
@@ -298,9 +331,6 @@ Basically it sets the logger to be used if C<set_logger> is never called; so
    -default_logger => Log::Contextual::WarnLogger->new({
       env_prefix => 'MY_PACKAGE'
    });
-
-If you are interested in using this package for a module you are putting on
-CPAN we recommend L<Log::Contextual::WarnLogger> for your default logger.
 
 =head1 A WORK IN PROGRESS
 
