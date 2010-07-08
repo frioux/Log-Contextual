@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - Use Log::Log4perl 1.29 to clean up caller stuff
+
 0.00300 2010-06-03
   - Add -package_logger import option
 

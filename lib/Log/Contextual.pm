@@ -29,6 +29,12 @@ my @log = (qw(
    log_fatal logS_fatal
  ));
 
+eval {
+   require Log::Log4perl;
+   die if $Log::Log4perl::VERSION < 1.29;
+   Log::Log4perl->wrapper_register(__PACKAGE__)
+};
+
 our @EXPORT_OK = (
    @dlog, @log,
    qw( set_logger with_logger )
@@ -125,7 +131,6 @@ sub _do_log {
    my $code   = shift;
    my @values = @_;
 
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 2;
    $logger->$level($code->(@_))
       if $logger->${\"is_$level"};
    @values
@@ -137,7 +142,6 @@ sub _do_logS {
    my $code   = shift;
    my $value  = shift;
 
-   local $Log::Log4perl::caller_depth = ($Log::Log4perl::caller_depth || 0 ) + 2;
    $logger->$level($code->($value))
       if $logger->${\"is_$level"};
    $value
