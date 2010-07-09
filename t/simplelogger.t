@@ -35,8 +35,8 @@ my $l2 = Log::Contextual::SimpleLogger->new({
    coderef => sub { $response = $_[0] },
 });
 {
-	local $SIG{__WARN__} = sub {}; # do this just to hide warning for tests
-	set_logger($l2);
+   local $SIG{__WARN__} = sub {}; # do this just to hide warning for tests
+   set_logger($l2);
 }
 log_trace { 'trace' };
 is($response, "[trace] trace\n", 'trace renders correctly');
@@ -53,4 +53,13 @@ is($response, "[fatal] fatal\n", 'fatal renders correctly');
 
 log_debug { 'line 1', 'line 2' };
 is($response, "[debug] line 1\nline 2\n", 'multiline log renders correctly');
+
+my $u = Log::Contextual::SimpleLogger->new({levels_upto => 'debug'});
+
+ok(!$u->is_trace, 'is_trace is false on SimpleLogger');
+ok($u->is_debug, 'is_debug is true on SimpleLogger');
+ok($u->is_info, 'is_info is true on SimpleLogger');
+ok($u->is_warn, 'is_warn is true on SimpleLogger');
+ok($u->is_error, 'is_error is true on SimpleLogger');
+ok($u->is_fatal, 'is_fatal is true on SimpleLogger');
 

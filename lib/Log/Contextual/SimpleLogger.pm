@@ -28,6 +28,20 @@ sub new {
 
   $self->{$_} = 1 for @{$args->{levels}};
   $self->{coderef} = $args->{coderef} || sub { print STDERR @_};
+
+  if (my $upto = $args->{levels_upto}) {
+
+    my @levels = (qw( trace debug info warn error fatal ));
+    my $i = 0;
+    for (@levels) {
+      last if $upto eq $_;
+      $i++
+    }
+    for ($i..$#levels) {
+      $self->{$levels[$_]} = 1
+    }
+
+  }
   return $self;
 }
 
@@ -70,15 +84,28 @@ L<Log::Dispatchouli>.
 
 =head2 new
 
-Arguments: C<< Dict[ levels => ArrayRef[Str], coderef => Optional[CodeRef] ] $conf >>
+Arguments: C<< Dict[
+  levels      => Optional[ArrayRef[Str]],
+  levels_upto => Level,
+  coderef     => Optional[CodeRef],
+] $conf >>
 
  my $l = Log::Contextual::SimpleLogger->new({
-   levels => [qw( info warn )],
+   levels  => [qw( info warn )],
    coderef => sub { print @_ }, # the default prints to STDERR
+ });
+
+or
+
+ my $l = Log::Contextual::SimpleLogger->new({
+   levels_upto => 'debug',
+   coderef     => sub { print @_ }, # the default prints to STDERR
  });
 
 Creates a new SimpleLogger object with the passed levels enabled and optionally
 a C<CodeRef> may be passed to modify how the logs are output/stored.
+
+C<levels_upto> enables all the levels upto and including the level passed.
 
 Levels may contain:
 
