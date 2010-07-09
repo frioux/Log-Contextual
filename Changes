@@ -1,7 +1,12 @@
 ChangeLog for Log-Contextual
 
-  - Add levels_upto RT58558
+0.00302 2010-07-08
+  - Add Log::Contextual::TeeLogger
+  - Add levels_upto (RT58558)
   - Use Log::Log4perl 1.29 to clean up caller stuff
+
+0.00301 2010-07-08
+  [deleted due to missing the TeeLogger]
 
 0.00300 2010-06-03
   - Add -package_logger import option
