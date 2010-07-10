@@ -3,8 +3,10 @@ use warnings;
 
 use Test::More;
 
-if (!eval "use Log::Log4perl; 1") {
-   plan skip_all => 'Log::Log4perl not installed'
+if (!eval "use Log::Log4perl;
+   die if $Log::Log4perl::VERSION < 1.29;
+    1") {
+   plan skip_all => 'Log::Log4perl 1.29 not installed'
 } else {
    plan tests => 2;
 }
@@ -25,6 +27,6 @@ open my $log, '<', 'myerrs.log';
 my @datas = <$log>;
 close $log;
 
-is $datas[0], "file:t/log4perl.t line:18 method:main:: - err 14\n", 'file and line work with Log4perl';
-is $datas[1], "file:t/log4perl.t line:21 method:main::foo - err 17\n", 'file and line work with Log4perl in a sub';
+is $datas[0], "file:t/log4perl.t line:20 method:main:: - err 14\n", 'file and line work with Log4perl';
+is $datas[1], "file:t/log4perl.t line:23 method:main::foo - err 17\n", 'file and line work with Log4perl in a sub';
 
