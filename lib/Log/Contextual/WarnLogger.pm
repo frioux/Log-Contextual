@@ -4,7 +4,9 @@ use strict;
 use warnings;
 
 {
-  for my $name (qw( trace debug info warn error fatal )) {
+  my @levels = (qw( trace debug info warn error fatal ));
+  my %level_num; @level_num{ @levels } = (0 .. $#levels);
+  for my $name (@levels) {
 
     no strict 'refs';
 
@@ -18,7 +20,12 @@ use warnings;
 
     *{$is_name} = sub {
       my $self = shift;
-      return $ENV{$self->{env_prefix} . '_' . uc $name};
+      return 1 if $ENV{$self->{env_prefix} . '_' . uc $name};
+      my $upto = $ENV{$self->{env_prefix} . '_UPTO'};
+      return unless $upto;
+      $upto = lc $upto;
+
+      return $level_num{$name} >= $level_num{$upto};
     };
   }
 }
@@ -88,12 +95,18 @@ the environment variables that will be checked for the six log levels.  For
 example, if C<env_prefix> is set to C<FREWS_PACKAGE> the following environment
 variables will be used:
 
+ FREWS_PACKAGE_UPTO
+
  FREWS_PACKAGE_TRACE
  FREWS_PACKAGE_DEBUG
  FREWS_PACKAGE_INFO
  FREWS_PACKAGE_WARN
  FREWS_PACKAGE_ERROR
  FREWS_PACKAGE_FATAL
+
+Note that C<UPTO> is a convenience variable.  If you set
+C<< FOO_UPTO=TRACE >> it will enable all log levels.  Similarly, if you
+set it to C<FATAL> only fatal will be enabled.
 
 =head2 $level
 

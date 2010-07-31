@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.00304 2010-07-31
+  - Add $package_UPTO environment variable for WarnLogger
+
 0.00303 2010-07-10
   - Fix broken Log::Log4perl test
 

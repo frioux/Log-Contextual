@@ -23,6 +23,28 @@ my $l = Log::Contextual::WarnLogger->new({ env_prefix => 'BAR' });
 }
 
 {
+   local $ENV{BAR_UPTO} = 'TRACE';
+
+   ok($l->is_trace, 'is_trace is true on WarnLogger');
+   ok($l->is_debug, 'is_debug is true on WarnLogger');
+   ok($l->is_info, 'is_info is true on WarnLogger');
+   ok($l->is_warn, 'is_warn is true on WarnLogger');
+   ok($l->is_error, 'is_error is true on WarnLogger');
+   ok($l->is_fatal, 'is_fatal is true on WarnLogger');
+}
+
+{
+   local $ENV{BAR_UPTO} = 'warn';
+
+   ok(!$l->is_trace, 'is_trace is false on WarnLogger');
+   ok(!$l->is_debug, 'is_debug is false on WarnLogger');
+   ok(!$l->is_info, 'is_info is false on WarnLogger');
+   ok($l->is_warn, 'is_warn is true on WarnLogger');
+   ok($l->is_error, 'is_error is true on WarnLogger');
+   ok($l->is_fatal, 'is_fatal is true on WarnLogger');
+}
+
+{
    local $ENV{FOO_TRACE} = 0;
    local $ENV{FOO_DEBUG} = 1;
    local $ENV{FOO_INFO} = 0;
