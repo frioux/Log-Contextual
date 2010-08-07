@@ -4,6 +4,9 @@ use warnings;
 use Log::Contextual qw{:log with_logger set_logger};
 use Log::Contextual::SimpleLogger;
 use Test::More qw(no_plan);
+
+my @levels = qw(debug trace warn info error fatal);
+
 my $var1;
 my $var2;
 my $var3;
@@ -76,81 +79,19 @@ SETWITHLOGGER: {
 }
 
 VANILLA: {
-   log_trace { 'fiSMBoC' };
-   is( $var3, "[trace] fiSMBoC\n", 'trace works');
+   for (@levels) {
+      main->can("log_$_")->(sub { 'fiSMBoC' });
+      is( $var3, "[$_] fiSMBoC\n", "$_ works");
 
-   log_debug { 'fiSMBoC' };
-   is( $var3, "[debug] fiSMBoC\n", 'debug works');
+      my @vars = main->can("log_$_")->(sub { 'fiSMBoC: ' . $_[1] }, qw{foo bar baz});
+      is( $var3, "[$_] fiSMBoC: bar\n", "log_$_ works with input");
+      ok( eq_array(\@vars, [qw{foo bar baz}]), "log_$_ passes data through correctly");
 
-   log_info { 'fiSMBoC' };
-   is( $var3, "[info] fiSMBoC\n", 'info works');
-
-   log_warn { 'fiSMBoC' };
-   is( $var3, "[warn] fiSMBoC\n", 'warn works');
-
-   log_error { 'fiSMBoC' };
-   is( $var3, "[error] fiSMBoC\n", 'error works');
-
-   log_fatal { 'fiSMBoC' };
-   is( $var3, "[fatal] fiSMBoC\n", 'fatal works');
-
+      my $val = main->can("logS_$_")->(sub { 'fiSMBoC: ' . $_[0] }, 'foo');
+      is( $var3, "[$_] fiSMBoC: foo\n", "logS_$_ works with input");
+      is( $val, 'foo', "logS_$_ passes data through correctly");
+   }
 }
 
 ok(!eval { Log::Contextual->import; 1 }, 'Blank Log::Contextual import dies');
 
-PASSTHROUGH: {
-   my @vars;
-
-   @vars = log_trace { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[trace] fiSMBoC: bar\n", 'log_trace works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_trace passes data through correctly');
-
-   @vars = log_debug { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[debug] fiSMBoC: bar\n", 'log_debug works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_debug passes data through correctly');
-
-   @vars = log_info { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[info] fiSMBoC: bar\n", 'log_info works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_info passes data through correctly');
-
-   @vars = log_warn { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[warn] fiSMBoC: bar\n", 'log_warn works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_warn passes data through correctly');
-
-   @vars = log_error { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[error] fiSMBoC: bar\n", 'log_error works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_error passes data through correctly');
-
-   @vars = log_fatal { 'fiSMBoC: ' . $_[1] } qw{foo bar baz};
-   is( $var3, "[fatal] fiSMBoC: bar\n", 'log_fatal works with input');
-   ok( eq_array(\@vars, [qw{foo bar baz}]), 'log_fatal passes data through correctly');
-
-
-
-   my $val;
-   $val = logS_trace { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[trace] fiSMBoC: foo\n", 'logS_trace works with input');
-   is( $val, 'foo', 'logS_trace passes data through correctly');
-
-   $val = logS_debug { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[debug] fiSMBoC: foo\n", 'logS_debug works with input');
-   is( $val, 'foo', 'logS_debug passes data through correctly');
-
-   $val = logS_info { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[info] fiSMBoC: foo\n", 'logS_info works with input');
-   is( $val, 'foo', 'logS_info passes data through correctly');
-
-   $val = logS_warn { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[warn] fiSMBoC: foo\n", 'logS_warn works with input');
-   is( $val, 'foo', 'logS_warn passes data through correctly');
-
-   $val = logS_error { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[error] fiSMBoC: foo\n", 'logS_error works with input');
-   is( $val, 'foo', 'logS_error passes data through correctly');
-
-   $val = logS_fatal { 'fiSMBoC: ' . $_[0] } 'foo';
-   is( $var3, "[fatal] fiSMBoC: foo\n", 'logS_fatal works with input');
-   is( $val, 'foo', 'logS_fatal passes data through correctly');
-
-   ok(!eval "logS_error { 'frew' } 'bar', 'baz'; 1", 'logS_$level dies from too many args');
-}
