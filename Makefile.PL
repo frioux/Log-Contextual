@@ -3,6 +3,7 @@ use inc::Module::Install 0.91;
 use strict;
 use warnings FATAL => 'all';
 
+perl_version '5.006';
 all_from 'lib/Log/Contextual.pm';
 requires 'Data::Dumper::Concise';
 
