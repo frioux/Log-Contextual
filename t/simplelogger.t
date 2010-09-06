@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use File::Temp;
 use Log::Contextual::SimpleLogger;
 use Log::Contextual qw{:log set_logger} => -logger =>
    Log::Contextual::SimpleLogger->new({levels => [qw{debug}]});
@@ -22,12 +23,15 @@ ok(eval { log_error { die 'this should live' }; 1}, 'error does not get called')
 ok(eval { log_fatal { die 'this should live' }; 1}, 'fatal does not get called');
 
 {
-   my $cap;
-   local *STDERR = do { open my $fh, '>', \$cap; $fh };
+  my $tempfile = File::Temp->new (UNLINK => 1, TEMPLATE => 'stderrXXXXXX');
+  my $fn = fileno ($tempfile);
+  open (STDERR, ">&$fn") or die $!;
+  log_debug { 'frew' };
 
-   log_debug { 'frew' };
-   is($cap, "[debug] frew\n", 'SimpleLogger outputs to STDERR correctly');
+  my $out = do { local @ARGV = $tempfile; <> };
+  is($out, "[debug] frew\n", 'SimpleLogger outputs to STDERR correctly');
 }
+
 
 my $response;
 my $l2 = Log::Contextual::SimpleLogger->new({
