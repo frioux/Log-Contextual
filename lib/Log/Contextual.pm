@@ -215,6 +215,10 @@ really basic logger, L<Log::Contextual::SimpleLogger>, but in general you
 should use a real logger instead of that.  For something more serious but not
 overly complicated, try L<Log::Dispatchouli> (see L</SYNOPSIS> for example.)
 
+The reason for this module is to abstract your logging interface so that
+logging is as painless as possible, while still allowing you to switch from one
+logger to another.
+
 =head1 OPTIONS
 
 =head2 -logger
