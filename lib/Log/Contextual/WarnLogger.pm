@@ -34,8 +34,14 @@ sub new {
   my ($class, $args) = @_;
   my $self = bless {}, $class;
 
-  $self->{env_prefix} = $args->{env_prefix} or
-     die 'no env_prefix passed to Log::Contextual::WarnLogger->new';
+  my $env_prefix = $args->{env_prefix};
+  if ($args->{env_prefix_for}) {
+    $env_prefix = uc($args->{env_prefix_for});
+    $env_prefix =~ s/::/_/g;
+  }
+
+  $self->{env_prefix} = $env_prefix or
+     die 'no env_prefix or env_prefix_for passed to Log::Contextual::WarnLogger->new';
   return $self;
 }
 
@@ -84,16 +90,17 @@ works.
 
 =head2 new
 
-Arguments: C<< Dict[ env_prefix => Str ] $conf >>
+Arguments: C<< Dict[ env_prefix => Str | env_prefix_for => Str ] $conf >>
 
  my $l = Log::Contextual::WarnLogger->new({
-   env_prefix
+   env_prefix     => 'FREWS_PACKAGE'  # either literal prefix
+   env_prefix_for => 'Frews::Package' # or module name that is transformed
  });
 
 Creates a new logger object where C<env_prefix> defines what the prefix is for
 the environment variables that will be checked for the six log levels.  For
-example, if C<env_prefix> is set to C<FREWS_PACKAGE> the following environment
-variables will be used:
+example, if C<env_prefix> is set to C<FREWS_PACKAGE> or C<env_prefix_for> is
+set to C<Frews::Package>, the following environment variables will be used:
 
  FREWS_PACKAGE_UPTO
 
@@ -107,6 +114,7 @@ variables will be used:
 Note that C<UPTO> is a convenience variable.  If you set
 C<< FOO_UPTO=TRACE >> it will enable all log levels.  Similarly, if you
 set it to C<FATAL> only fatal will be enabled.
+
 
 =head2 $level
 

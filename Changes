@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.00305 2011-07-20
+  - Add 'warn' and 'env_prefix_for' parameters as shortcuts.
+
 0.00304 2010-07-31
   - Add $package_UPTO environment variable for WarnLogger
 

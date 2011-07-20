@@ -3,13 +3,14 @@ package Log::Contextual;
 use strict;
 use warnings;
 
-our $VERSION = '0.00304';
+our $VERSION = '0.00305';
 
 my @levels = qw(debug trace warn info error fatal);
 
 require Exporter;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
+use Log::Contextual::WarnLogger; 
 
 BEGIN { our @ISA = qw(Exporter) }
 
@@ -45,10 +46,18 @@ sub import {
          set_logger($_[$idx + 1]);
          splice @_, $idx, 2;
       } elsif ( defined $val && $val eq '-package_logger' ) {
-         _set_package_logger_for(scalar caller, $_[$idx + 1]);
+         my ($module, $logger) = (scalar caller, $_[$idx + 1]);
+         $logger = Log::Contextual::WarnLogger->new({ 
+             env_prefix_for => $module 
+         }) if $logger eq 'warn';
+         _set_package_logger_for($module, $logger);
          splice @_, $idx, 2;
       } elsif ( defined $val && $val eq '-default_logger' ) {
-         _set_default_logger_for(scalar caller, $_[$idx + 1]);
+         my ($module, $logger) = (scalar caller, $_[$idx + 1]);
+         $logger = Log::Contextual::WarnLogger->new({ 
+             env_prefix_for => $module 
+         }) if $logger eq 'warn';
+         _set_default_logger_for($module, $logger);
          splice @_, $idx, 2;
       }
    }
@@ -253,7 +262,11 @@ L</set_logger>.
    });
 
 If you are interested in using this package for a module you are putting on
-CPAN we recommend L<Log::Contextual::WarnLogger> for your package logger.
+CPAN we recommend L<Log::Contextual::WarnLogger> for your package logger. You
+can simply enable a warn logger for your package with this shortcut:
+
+ package My::Package;
+ use Log::Contextual qw( :log ), -package_logger => 'warn';
 
 =head2 -default_logger
 
@@ -268,6 +281,11 @@ Basically it sets the logger to be used if C<set_logger> is never called; so
    -default_logger => Log::Contextual::WarnLogger->new({
       env_prefix => 'MY_PACKAGE'
    });
+
+The scalar value C<warn> can be used to automatically set a WarnLogger with
+C<env_prefix> based on name of the current package:
+
+ use Log::Contextual qw( :log ), -default_logger => 'warn';
 
 =head1 A WORK IN PROGRESS
 
