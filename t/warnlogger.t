@@ -83,5 +83,14 @@ my $l = Log::Contextual::WarnLogger->new({ env_prefix => 'BAR' });
    is($cap, "[error] error\n", 'error renders correctly');
    log_fatal { 'fatal' };
    is($cap, "[fatal] fatal\n", 'fatal renders correctly');
-
 }
+
+$l = Log::Contextual::WarnLogger->new({ env_prefix_for => 'Baz::Doz' });
+
+{
+   local $ENV{BAZ_DOZ_TRACE} = 0;
+   local $ENV{BAZ_DOZ_DEBUG} = 1;
+   ok(!$l->is_trace, 'trace set, env_prefix_for');
+   ok($l->is_debug, 'debug set, env_prefix_for');
+}
+
