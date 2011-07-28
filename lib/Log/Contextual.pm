@@ -147,14 +147,19 @@ for my $level (@levels) {
    };
 
    *{"Dlog_$level"} = sub (&@) {
-     my $code = shift;
-     local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
-     return _do_log( $level => _get_logger( caller ), $code, @_ );
+     my ($code, @args) = @_;
+     return _do_log( $level => _get_logger( caller ), sub {
+        local $_ = (@args?Data::Dumper::Concise::Dumper @args:'()');
+        $code->(@_)
+     }, @args );
    };
 
    *{"DlogS_$level"} = sub (&$) {
-     local $_ = Data::Dumper::Concise::Dumper $_[1];
-     _do_logS( $level => _get_logger( caller ), $_[0], $_[1] )
+     my ($code, $ref) = @_;
+     _do_logS( $level => _get_logger( caller ), sub {
+        local $_ = Data::Dumper::Concise::Dumper $ref;
+        $code->($ref)
+     }, $ref )
    };
 }
 

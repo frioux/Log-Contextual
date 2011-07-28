@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - Fix regression that caused D* subs to dumper even if the log level was off
+
 0.00304 2010-07-31
   - Add $package_UPTO environment variable for WarnLogger
 
