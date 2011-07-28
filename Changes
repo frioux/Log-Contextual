@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+0.00305 2011-07-27
   - Fix regression that caused D* subs to dumper even if the log level was off
 
 0.00304 2010-07-31
