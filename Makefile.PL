@@ -6,5 +6,6 @@ use warnings FATAL => 'all';
 perl_version '5.006';
 all_from 'lib/Log/Contextual.pm';
 requires 'Data::Dumper::Concise';
+requires 'Exporter::Declare';
 
 WriteAll;
