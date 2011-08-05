@@ -22,13 +22,17 @@ eval {
    Log::Log4perl->wrapper_register(__PACKAGE__)
 };
 
-exports (
+# ____ is because tags must have at least one export and we don't want to
+# export anything but the levels selected
+sub ____ {}
+
+exports ('____',
    @dlog, @log,
    qw( set_logger with_logger )
 );
 
-export_tag dlog => @dlog;
-export_tag log  => @log;
+export_tag dlog => ('____');
+export_tag log  => ('____');
 import_arguments qw(logger package_logger default_logger);
 
 sub before_import {
@@ -37,10 +41,7 @@ sub before_import {
    die 'Log::Contextual does not have a default import list'
       if $spec->config->{default};
 
-   my @levels = qw(debug trace warn info error fatal);
-   if ( my $levels = $spec->config->{levels} ) {
-      @levels = @$levels
-   }
+   my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
       if ($spec->config->{log}) {
          $spec->add_export("&log_$level", sub (&@) {
@@ -69,17 +70,25 @@ sub before_import {
    }
 }
 
+sub arg_logger { $_[1] }
+sub arg_levels { $_[1] || [qw(debug trace warn info error fatal)] }
+sub arg_package_logger { $_[1] }
+sub arg_default_logger { $_[1] }
+
 sub after_import {
    my ($class, $importer, $specs) = @_;
 
-   set_logger( $specs->config->{logger} )
-      if $specs->config->{logger};
-   
-   _set_package_logger_for( $importer, $specs->config->{package_logger} )
-      if $specs->config->{package_logger};
+   if (my $l = $class->arg_logger($specs->config->{logger})) {
+      set_logger($l)
+   }
 
-   _set_default_logger_for( $importer, $specs->config->{default_logger} )
-      if $specs->config->{default_logger};
+   if (my $l = $class->arg_package_logger($specs->config->{package_logger})) {
+      _set_package_logger_for($importer, $l)
+   }
+
+   if (my $l = $class->arg_default_logger($specs->config->{default_logger})) {
+      _set_default_logger_for($importer, $l)
+   }
 }
 
 our $Get_Logger;
@@ -240,6 +249,17 @@ case you might try something like the following:
  my $var_log;
  BEGIN { $var_log = VarLogger->new }
  use Log::Contextual qw( :dlog ), -logger => $var_log;
+
+=head2 -levels
+
+The C<-levels> import option allows you to define exactly which levels your
+logger supports.  So the default,
+C<< [qw(debug trace warn info error fatal)] >>, works great for
+L<Log::Log4perl>, but it doesn't support the levels for L<Log::Dispatch>.  But
+supporting those levels is as easy as doing
+
+ use Log::Contextual
+   -levels => [qw( debug info notice warning error critical alert emergency )];
 
 =head2 -package_logger
 
