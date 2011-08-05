@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+  - Support Log::Contextual subclasses for default import options
   - Allow custom log levels
 
 0.00305 2011-07-27

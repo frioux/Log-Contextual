@@ -232,7 +232,22 @@ The reason for this module is to abstract your logging interface so that
 logging is as painless as possible, while still allowing you to switch from one
 logger to another.
 
-=head1 OPTIONS
+=head1 A WORK IN PROGRESS
+
+This module is certainly not complete, but we will not break the interface
+lightly, so I would say it's safe to use in production code.  The main result
+from that at this point is that doing:
+
+ use Log::Contextual;
+
+will die as we do not yet know what the defaults should be.  If it turns out
+that nearly everyone uses the C<:log> tag and C<:dlog> is really rare, we'll
+probably make C<:log> the default.  But only time and usage will tell.
+
+=head1 IMPORT OPTIONS
+
+See L</SETTING DEFAULT IMPORT OPTIONS> for information on setting these project
+wide.
 
 =head2 -logger
 
@@ -293,17 +308,43 @@ Basically it sets the logger to be used if C<set_logger> is never called; so
       env_prefix => 'MY_PACKAGE'
    });
 
-=head1 A WORK IN PROGRESS
+=head1 SETTING DEFAULT IMPORT OPTIONS
 
-This module is certainly not complete, but we will not break the interface
-lightly, so I would say it's safe to use in production code.  The main result
-from that at this point is that doing:
+Eventually you will get tired of writing the following in every single one of
+your packages:
 
- use Log::Contextual;
+ use Log::Log4perl;
+ use Log::Log4perl ':easy';
+ BEGIN { Log::Log4perl->easy_init($DEBUG) }
 
-will die as we do not yet know what the defaults should be.  If it turns out
-that nearly everyone uses the C<:log> tag and C<:dlog> is really rare, we'll
-probably make C<:log> the default.  But only time and usage will tell.
+ use Log::Contextual -logger => Log::Log4perl->get_logger;
+
+You can set any of the import options for your whole project if you define your
+own C<Log::Contextual> subclass as follows:
+
+ package MyApp::Log::Contextual;
+
+ use base 'Log::Contextual';
+
+ use Log::Log4perl ':easy';
+ Log::Log4perl->easy_init($DEBUG)
+
+ sub arg_logger { $_[1] || Log::Log4perl->get_logger }
+ sub arg_levels { [qw(debug trace warn info error fatal custom_level)] }
+
+ # and *maybe* even these:
+ sub arg_package_logger { $_[1] }
+ sub arg_default_logger { $_[1] }
+
+Note the C<< $_[1] || >> in C<arg_logger>.  All of these methods are passed the
+values passed in from the arguments to the subclass, so you can either throw
+them away, honor them, die on usage, or whatever.  To be clear, if you define
+your subclass, and someone uses it as follows:
+
+ use MyApp::Log::Contextual -logger => $foo, -levels => [qw(bar baz biff)];
+
+Your C<arg_logger> method will get C<$foo> and your C<arg_levels>
+will get C<[qw(bar baz biff)]>;
 
 =head1 FUNCTIONS
 
