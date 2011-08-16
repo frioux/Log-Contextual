@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+0.004001 2011-08-15
+  - Fix version of Exporter::Declare that we dep on
+
 0.004000 2011-08-06
   - Support Log::Contextual subclasses for default import options
   - Allow custom log levels
