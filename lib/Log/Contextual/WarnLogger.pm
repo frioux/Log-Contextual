@@ -3,36 +3,101 @@ package Log::Contextual::WarnLogger;
 use strict;
 use warnings;
 
+use Carp 'croak';
+
+my @default_levels = qw( trace debug info warn error fatal );
+
+
+# generate subs to handle the default levels
+# anything else will have to be handled by AUTOLOAD at runtime
 {
-  my @levels = (qw( trace debug info warn error fatal ));
-  my %level_num; @level_num{ @levels } = (0 .. $#levels);
-  for my $name (@levels) {
+  for my $level (@default_levels) {
 
     no strict 'refs';
 
-    my $is_name = "is_$name";
-    *{$name} = sub {
+    my $is_name = "is_$level";
+    *{$level} = sub {
       my $self = shift;
 
-      $self->_log( $name, @_ )
+      $self->_log( $level, @_ )
         if $self->$is_name;
     };
 
     *{$is_name} = sub {
       my $self = shift;
-      return 1 if $ENV{$self->{env_prefix} . '_' . uc $name};
+      return 1 if $ENV{$self->{env_prefix} . '_' . uc $level};
       my $upto = $ENV{$self->{env_prefix} . '_UPTO'};
       return unless $upto;
       $upto = lc $upto;
 
-      return $level_num{$name} >= $level_num{$upto};
+      return $self->{level_num}{$level} >= $self->{level_num}{$upto};
     };
   }
 }
 
+our $AUTOLOAD;
+sub AUTOLOAD {
+  my $self = $_[0];
+
+  (my $name = our $AUTOLOAD) =~ s/.*:://;
+  return if $name eq 'DESTROY';
+
+  # extract the log level from the sub name
+  my ($is, $level) = $name =~ m/^(is_)?(.+)$/;
+  my $is_name = "is_$level";
+
+  no strict 'refs';
+  *{$level} = sub {
+    my $self = shift;
+
+    $self->_log( $level, @_ )
+      if $self->$is_name;
+  };
+
+  *{$is_name} = sub {
+    my $self = shift;
+
+    my $prefix_field = $self->{env_prefix} . '_' . uc $level;
+    return 1 if $ENV{$prefix_field};
+
+    # don't log if the variable specifically says not to
+    return 0 if defined $ENV{$prefix_field} and not $ENV{$prefix_field};
+
+    my $upto_field = $self->{env_prefix} . '_UPTO';
+    my $upto = $ENV{$upto_field};
+
+    if ($upto) {
+      $upto = lc $upto;
+
+      croak "Unrecognized log level '$upto' in \$ENV{$upto_field}"
+        if not defined $self->{level_num}{$upto};
+
+      return $self->{level_num}{$level} >= $self->{level_num}{$upto};
+    }
+
+    # if we don't recognize this level and nothing says otherwise, log!
+    return 1 if not $self->{custom_levels};
+  };
+  goto &$AUTOLOAD;
+}
+
 sub new {
   my ($class, $args) = @_;
-  my $self = bless {}, $class;
+
+  my $levels = $args->{levels};
+  croak 'invalid levels specification: must be non-empty arrayref'
+    if defined $levels and (ref $levels ne 'ARRAY' or !@$levels);
+
+  my $custom_levels = defined $levels;
+  $levels ||= [ @default_levels ];
+
+  my %level_num; @level_num{ @$levels } = (0 .. $#{$levels});
+
+  my $self = bless {
+    levels => $levels,
+    level_num => \%level_num,
+    custom_levels => $custom_levels,
+  }, $class;
 
   $self->{env_prefix} = $args->{env_prefix} or
      die 'no env_prefix passed to Log::Contextual::WarnLogger->new';
@@ -61,7 +126,8 @@ Log::Contextual::WarnLogger - Simple logger for libraries using Log::Contextual
  use Log::Contextual::WarnLogger;
  use Log::Contextual qw( :log ),
    -default_logger => Log::Contextual::WarnLogger->new({
-      env_prefix => 'MY_PACKAGE'
+      env_prefix => 'MY_PACKAGE',
+      levels => [ qw(debug info notice warning error critical alert emergency) ],
    });
 
  # warns '[info] program started' if $ENV{MY_PACKAGE_TRACE} is set
@@ -71,6 +137,8 @@ Log::Contextual::WarnLogger - Simple logger for libraries using Log::Contextual
    log_debug { 'entered foo' };
    ...
  }
+
+
 
 =head1 DESCRIPTION
 
@@ -84,15 +152,42 @@ works.
 
 =head2 new
 
-Arguments: C<< Dict[ env_prefix => Str ] $conf >>
+Arguments: C<< Dict[ env_prefix => Str, levels => List ] $conf >>
 
  my $l = Log::Contextual::WarnLogger->new({
-   env_prefix
+   env_prefix => 'BAR'
+ });
+
+or:
+
+ my $l = Log::Contextual::WarnLogger->new({
+   env_prefix => 'BAR',
+   levels => [ 'level1', 'level2' ]
+
  });
 
 Creates a new logger object where C<env_prefix> defines what the prefix is for
-the environment variables that will be checked for the six log levels.  For
-example, if C<env_prefix> is set to C<FREWS_PACKAGE> the following environment
+the environment variables that will be checked for the log levels.
+
+The log levels may be customized, but if not defined, these are used:
+
+=over 4
+
+=item trace
+
+=item debug
+
+=item info
+
+=item warn
+
+=item error
+
+=item fatal
+
+=back
+
+For example, if C<env_prefix> is set to C<FREWS_PACKAGE> the following environment
 variables will be used:
 
  FREWS_PACKAGE_UPTO
@@ -107,6 +202,8 @@ variables will be used:
 Note that C<UPTO> is a convenience variable.  If you set
 C<< FOO_UPTO=TRACE >> it will enable all log levels.  Similarly, if you
 set it to C<FATAL> only fatal will be enabled.
+
+=back
 
 =head2 $level
 
@@ -145,6 +242,9 @@ All of the following six methods work the same.  The basic pattern is:
 
  $l->fatal( '1 is never equal to 0!' );
 
+If different levels are specified, appropriate functions named for your custom
+levels work as you expect.
+
 =head2 is_$level
 
 All of the following six functions just return true if their respective
@@ -173,6 +273,9 @@ environment variable is enabled.
 =head3 is_fatal
 
  say q{fatal'ing} if $l->is_fatal;
+
+If different levels are specified, appropriate is_$level functions work as you
+would expect.
 
 =head1 AUTHOR
 

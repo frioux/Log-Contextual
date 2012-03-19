@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+  - Log::Contextual::WarnLogger now supports customized log levels via the
+    'levels' constructor argument (Karen Etheridge)
+
 0.004001 2011-08-15
   - Fix version of Exporter::Declare that we dep on
 
