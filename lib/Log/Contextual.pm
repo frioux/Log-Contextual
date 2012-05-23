@@ -378,7 +378,7 @@ The C<-package_logger> import option is similar to the C<-logger> import option
 except C<-package_logger> sets the logger for the current package.
 
 Unlike L</-default_logger>, C<-package_logger> cannot be overridden with
-L</set_logger>.
+L</set_logger> or L</with_logger>.
 
  package My::Package;
  use Log::Contextual::SimpleLogger;
