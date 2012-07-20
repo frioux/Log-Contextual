@@ -122,7 +122,7 @@ sub _get_logger($) {
       $Get_Logger ||
       $Default_Logger{$package} ||
       die q( no logger set!  you can't try to log something without a logger! )
-   )->($package);
+   )->($package, { caller_level => 3 });
 }
 
 sub set_logger {
@@ -254,7 +254,7 @@ C<Log::Contextual> you will be able to swap underlying loggers later.
 
 =item * Powerful
 
-C<Log::Contextual> chooses which logger to use based on user defined C<CodeRef>s.
+C<Log::Contextual> chooses which logger to use based on L<< user defined C<CodeRef>s|/LOGGER CODEREF>>.
 Normally you don't need to know this, but you can take advantage of it when you
 need to later
 
@@ -399,7 +399,7 @@ will get C<[qw(bar baz biff)]>;
  my $logger = WarnLogger->new;
  set_logger $logger;
 
-Arguments: C<Ref|CodeRef $returning_logger>
+Arguments: L</LOGGER CODEREF>
 
 C<set_logger> will just set the current logger to whatever you pass it.  It
 expects a C<CodeRef>, but if you pass it something else it will wrap it in a
@@ -418,7 +418,7 @@ more than once.
     }
  };
 
-Arguments: C<Ref|CodeRef $returning_logger, CodeRef $to_execute>
+Arguments: L</LOGGER CODEREF>, C<CodeRef $to_execute>
 
 C<with_logger> sets the logger for the scope of the C<CodeRef> C<$to_execute>.
 As with L</set_logger>, C<with_logger> will wrap C<$returning_logger> with a
@@ -538,6 +538,50 @@ slurping up (and also setting C<wantarray>) all the C<@args>
 
  my $pals_rs = DlogS_debug { "pals resultset: $_" }
    $schema->resultset('Pals')->search({ perlers => 1 });
+
+=head1 LOGGER CODEREF
+
+Anywhere a logger object can be passed, a coderef is accepted.  This is so
+that the user can use different logger objects based on runtime information.
+The logger coderef is passed the package of the caller the caller level the
+coderef needs to use if it wants more caller information.  The latter is in
+a hashref to allow for more options in the future.
+
+The following is an example that uses the information passed to the logger
+coderef.  It sets the global logger to C<$l3>, the logger for the C<A1>
+package to C<$l1>, except the C<lol> method in C<A1> which uses the C<$l2>
+logger and lastly the logger for the C<A2> package to C<$l2>.
+
+ my $complex_dispatcher = do {
+
+    my $l1 = ...;
+    my $l2 = ...;
+    my $l3 = ...;
+
+    my %registry = (
+       -logger => $l3,
+       A1 => {
+          -logger => $l1,
+          lol     => $l2,
+       },
+       A2 => { -logger => $l2 },
+    );
+
+    sub {
+       my ( $package, $info ) = @_;
+
+       my $logger = $registry{'-logger'};
+       if (my $r = $registry{$package}) {
+          $logger = $r->{'-logger'} if $r->{'-logger'};
+          my (undef, undef, undef, $sub) = caller($info->{caller_level});
+          $sub =~ s/^\Q$package\E:://g;
+          $logger = $r->{$sub} if $r->{$sub};
+       }
+       return $logger;
+    }
+ };
+
+ set_logger $complex_dispatcher;
 
 =head1 LOGGER INTERFACE
 

@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+  - Improve information passed to logger coderef
   - Significant doc improvements
   - Fix warning in test suite in Perl 5.16
 
