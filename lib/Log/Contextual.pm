@@ -194,14 +194,17 @@ Log::Contextual - Simple logging interface with a contextual log
  log_debug { 'program started' };
 
  sub foo {
-   with_logger(Log::Contextual::SimpleLogger->new({
-       levels => [qw( trace debug )]
-     }) => sub {
+
+   my $minilogger = Log::Contextual::SimpleLogger->new({
+     levels => [qw( trace debug )]
+   });
+
+   with_logger $minilogger => sub {
      log_trace { 'foo entered' };
      my ($foo, $bar) = Dlog_trace { "params for foo: $_" } @_;
      # ...
      log_trace { 'foo left' };
-   });
+   };
  }
 
  foo();
