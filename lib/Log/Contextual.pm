@@ -332,21 +332,24 @@ own C<Log::Contextual> subclass as follows:
  use Log::Log4perl ':easy';
  Log::Log4perl->easy_init($DEBUG)
 
- sub arg_logger { $_[1] || Log::Log4perl->get_logger }
+ sub arg_default_logger { $_[1] || Log::Log4perl->get_logger }
  sub arg_levels { [qw(debug trace warn info error fatal custom_level)] }
 
- # and *maybe* even these:
+ # or maybe instead of default_logger
  sub arg_package_logger { $_[1] }
- sub arg_default_logger { $_[1] }
 
-Note the C<< $_[1] || >> in C<arg_logger>.  All of these methods are passed the
-values passed in from the arguments to the subclass, so you can either throw
-them away, honor them, die on usage, or whatever.  To be clear, if you define
-your subclass, and someone uses it as follows:
+ # and almost definitely not this, which is only here for completeness
+ sub arg_logger { $_[1] }
 
- use MyApp::Log::Contextual -logger => $foo, -levels => [qw(bar baz biff)];
+Note the C<< $_[1] || >> in C<arg_default_logger>.  All of these methods are
+passed the values passed in from the arguments to the subclass, so you can
+either throw them away, honor them, die on usage, or whatever.  To be clear,
+if you define your subclass, and someone uses it as follows:
 
-Your C<arg_logger> method will get C<$foo> and your C<arg_levels>
+ use MyApp::Log::Contextual -default_logger => $foo,
+                            -levels => [qw(bar baz biff)];
+
+Your C<arg_default_logger> method will get C<$foo> and your C<arg_levels>
 will get C<[qw(bar baz biff)]>;
 
 =head1 FUNCTIONS
