@@ -3,7 +3,7 @@ package Log::Contextual;
 use strict;
 use warnings;
 
-our $VERSION = '0.004100';
+our $VERSION = '0.004200';
 
 my @levels = qw(debug trace warn info error fatal);
 

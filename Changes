@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+0.004200 2012-07-20
   - Improve information passed to logger coderef
   - Significant doc improvements
   - Fix warning in test suite in Perl 5.16
