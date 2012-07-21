@@ -1,5 +1,6 @@
 ChangeLog for Log-Contextual
 
+  - Significant doc improvements
   - Fix warning in test suite in Perl 5.16
 
 0.004100 2012-03-29

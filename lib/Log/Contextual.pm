@@ -186,7 +186,6 @@ Log::Contextual - Simple logging interface with a contextual log
  use Log::Log4perl ':easy';
  Log::Log4perl->easy_init($DEBUG);
 
-
  my $logger  = Log::Log4perl->get_logger;
 
  set_logger $logger;
@@ -226,14 +225,55 @@ with C<Log::Contextual>:
 
 =head1 DESCRIPTION
 
-This module is a simple interface to extensible logging.  It is bundled with a
-really basic logger, L<Log::Contextual::SimpleLogger>, but in general you
-should use a real logger instead of that.  For something more serious but not
-overly complicated, try L<Log::Dispatchouli> (see L</SYNOPSIS> for example.)
+Major benefits:
 
-The reason for this module is to abstract your logging interface so that
-logging is as painless as possible, while still allowing you to switch from one
-logger to another.
+=over 2
+
+=item * Efficient
+
+The logging functions take blocks, so if a log level is disabled, the
+block will not run:
+
+ # the following won't run if debug is off
+ log_debug { "the new count in the database is " . $rs->count };
+
+Similarly, the C<D> prefixed methods only C<Dumper> the input if the level is
+enabled.
+
+=item * Handy
+
+The logging functions return their arguments, so you can stick them in
+the middle of expressions:
+
+ for (log_debug { "downloading:\n" . join qq(\n), @_ } @urls) { ... }
+
+=item * Generic
+
+C<Log::Contextual> is an interface for all major loggers.  If you log through
+C<Log::Contextual> you will be able to swap underlying loggers later.
+
+=item * Powerful
+
+C<Log::Contextual> chooses which logger to use based on user defined C<CodeRef>s.
+Normally you don't need to know this, but you can take advantage of it when you
+need to later
+
+=item * Scalable
+
+If you just want to add logging to your extremely basic application, start with
+L<Log::Contextual::SimpleLogger> and then as your needs grow you can switch to
+L<Log::Dispatchouli> or L<Log::Dispatch> or L<Log::Log4perl> or whatever else.
+
+=back
+
+This module is a simple interface to extensible logging.  It exists to
+abstract your logging interface so that logging is as painless as possible,
+while still allowing you to switch from one logger to another.
+
+It is bundled with a really basic logger, L<Log::Contextual::SimpleLogger>,
+but in general you should use a real logger instead of that.  For something
+more serious but not overly complicated, try L<Log::Dispatchouli> (see
+L</SYNOPSIS> for example.)
 
 =head1 A WORK IN PROGRESS
 
