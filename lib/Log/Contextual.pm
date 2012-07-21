@@ -533,7 +533,7 @@ mst - Matt S. Trout <mst@shadowcat.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 the Log::Contextual L</AUTHOR> and L</DESIGNER> as listed
+Copyright (c) 2012 the Log::Contextual L</AUTHOR> and L</DESIGNER> as listed
 above.
 
 =head1 LICENSE
