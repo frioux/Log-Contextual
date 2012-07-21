@@ -390,7 +390,7 @@ Import Tag: C<:log>
 
 Arguments: C<CodeRef $returning_message, @args>
 
-All of the following six functions work the same except that a different method
+C<log_$level> functions all work the same except that a different method
 is called on the underlying C<$logger> object.  The basic pattern is:
 
  sub log_$level (&@) {
@@ -411,29 +411,24 @@ ways, but often it's convenient just for partial inspection of passthrough data
 If you want complete inspection of passthrough data, take a look at the
 L</Dlog_$level> functions.
 
-=head3 log_trace
+Which functions are exported depends on what was passed to L</-levels>.  The
+default (no C<-levels> option passed) would export:
 
- log_trace { 'entered method foo with args ' join q{,}, @args };
+=over 2
 
-=head3 log_debug
+=item log_trace
 
- log_debug { 'entered method foo' };
+=item log_debug
 
-=head3 log_info
+=item log_info
 
- log_info { 'started process foo' };
+=item log_warn
 
-=head3 log_warn
+=item log_error
 
- log_warn { 'possible misconfiguration at line 10' };
+=item log_fatal
 
-=head3 log_error
-
- log_error { 'non-numeric user input!' };
-
-=head3 log_fatal
-
- log_fatal { '1 is never equal to 0!' };
+=back
 
 =head2 logS_$level
 
@@ -472,29 +467,24 @@ and the output might look something like:
  "fRUE"
  "fiSMBoC"
 
-=head3 Dlog_trace
+Which functions are exported depends on what was passed to L</-levels>.  The
+default (no C<-levels> option passed) would export:
 
- my ($foo, $bar) = Dlog_trace { "entered method foo with args: $_" } @_;
+=over 2
 
-=head3 Dlog_debug
+=item Dlog_trace
 
- Dlog_debug { "random data structure: $_" } { foo => $bar };
+=item Dlog_debug
 
-=head3 Dlog_info
+=item Dlog_info
 
- return Dlog_info { "html from method returned: $_" } "<html>...</html>";
+=item Dlog_warn
 
-=head3 Dlog_warn
+=item Dlog_error
 
- Dlog_warn { "probably invalid value: $_" } $foo;
+=item Dlog_fatal
 
-=head3 Dlog_error
-
- Dlog_error { "non-numeric user input! ($_)" } $port;
-
-=head3 Dlog_fatal
-
- Dlog_fatal { '1 is never equal to 0!' } 'ZOMG ZOMG' if 1 == 0;
+=back
 
 =head2 DlogS_$level
 
