@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - The smallest pod fix ever
+
 0.004200 2012-07-20
   - Improve information passed to logger coderef
   - Significant doc improvements

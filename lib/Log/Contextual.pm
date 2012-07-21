@@ -254,7 +254,7 @@ C<Log::Contextual> you will be able to swap underlying loggers later.
 
 =item * Powerful
 
-C<Log::Contextual> chooses which logger to use based on L<< user defined C<CodeRef>s|/LOGGER CODEREF>>.
+C<Log::Contextual> chooses which logger to use based on L<< user defined C<CodeRef>s|/LOGGER CODEREF >>.
 Normally you don't need to know this, but you can take advantage of it when you
 need to later
 
