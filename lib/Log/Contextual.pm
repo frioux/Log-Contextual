@@ -122,7 +122,7 @@ sub _get_logger($) {
       $Get_Logger ||
       $Default_Logger{$package} ||
       die q( no logger set!  you can't try to log something without a logger! )
-   )->($package, { caller_level => 3 });
+   )->($package, { caller_level => 2 });
 }
 
 sub set_logger {
@@ -547,10 +547,29 @@ The logger coderef is passed the package of the caller the caller level the
 coderef needs to use if it wants more caller information.  The latter is in
 a hashref to allow for more options in the future.
 
+Here is a basic example of a logger that exploits C<caller> to reproduce the
+output of C<warn> with a logger:
+
+ my @caller_info;
+ my $var_log = Log::Contextual::SimpleLogger->new({
+    levels  => [qw(trace debug info warn error fatal)],
+    coderef => sub { chomp($_[0]); warn "$_[0] at $caller_info[1] line $caller_info[2].\n" }
+ });
+ my $warn_faker = sub {
+    my ($package, $args) = @_;
+    @caller_info = caller($args->{caller_level});
+    $var_log
+ };
+ set_logger($warn_faker);
+ log_debug { 'test' };
+
 The following is an example that uses the information passed to the logger
 coderef.  It sets the global logger to C<$l3>, the logger for the C<A1>
 package to C<$l1>, except the C<lol> method in C<A1> which uses the C<$l2>
 logger and lastly the logger for the C<A2> package to C<$l2>.
+
+Note that it increases the caller level as it dispatches based on where
+the caller of the log function, not the log function itself.
 
  my $complex_dispatcher = do {
 
@@ -573,7 +592,7 @@ logger and lastly the logger for the C<A2> package to C<$l2>.
        my $logger = $registry{'-logger'};
        if (my $r = $registry{$package}) {
           $logger = $r->{'-logger'} if $r->{'-logger'};
-          my (undef, undef, undef, $sub) = caller($info->{caller_level});
+          my (undef, undef, undef, $sub) = caller($info->{caller_level} + 1);
           $sub =~ s/^\Q$package\E:://g;
           $logger = $r->{$sub} if $r->{$sub};
        }

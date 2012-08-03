@@ -1,5 +1,8 @@
 ChangeLog for Log-Contextual
 
+  - correct the caller_level passed into coderef, and document "both" uses of
+    caller_level
+
 0.004201 2012-07-21
   - The smallest pod fix ever
 

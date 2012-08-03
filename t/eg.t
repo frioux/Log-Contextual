@@ -38,7 +38,7 @@ my $complex_dispatcher = do {
       my $logger = $registry{'-logger'};
       if (my $r = $registry{$package}) {
          $logger = $r->{'-logger'} if $r->{'-logger'};
-         my (undef, undef, undef, $sub) = caller($info->{caller_level});
+         my (undef, undef, undef, $sub) = caller($info->{caller_level} + 1);
          $sub =~ s/^\Q$package\E:://g;
          $logger = $r->{$sub} if $r->{$sub};
       }
