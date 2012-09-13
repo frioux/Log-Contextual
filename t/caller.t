@@ -16,5 +16,15 @@ my $warn_faker = sub {
    $var_log
 };
 set_logger($warn_faker);
-log_debug { 'test' };
-is($var, "[debug] test at " . __FILE__ . " line " . (__LINE__-1) . ".\n", 'fake warn');
+
+log_debug { 'test log_debug' };
+is($var, "[debug] test log_debug at " . __FILE__ . " line " . (__LINE__-1) . ".\n", 'fake warn');
+
+logS_debug { 'test logS_debug' };
+is($var, "[debug] test logS_debug at " . __FILE__ . " line " . (__LINE__-1) . ".\n", 'fake warn');
+
+logS_debug { 'test Dlog_debug' };
+is($var, "[debug] test Dlog_debug at " . __FILE__ . " line " . (__LINE__-1) . ".\n", 'fake warn');
+
+logS_debug { 'test DlogS_debug' };
+is($var, "[debug] test DlogS_debug at " . __FILE__ . " line " . (__LINE__-1) . ".\n", 'fake warn');

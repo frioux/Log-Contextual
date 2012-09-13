@@ -9,6 +9,7 @@ requires 'Data::Dumper::Concise';
 requires 'Exporter::Declare' => 0.105;
 requires 'Carp';
 requires 'Scalar::Util';
+requires 'Moo';
 
 test_requires 'Test::Fatal';
 

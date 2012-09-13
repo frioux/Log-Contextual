@@ -45,7 +45,7 @@ is(
 ok( eq_array(\@foo, []), "Dlog_custom passes nothing through correctly");
 is( $DumbLogger::var, "nothing: ()", "Output for Dlog_custom is correct");
 
-ok(!main->can($_), "$_ not imported") 
+ok(!main->can($_), "$_ not imported")
    for map +( "log_$_", "logS_$_" ), qw(debug trace warn info error fatal);
 
 ok(!eval { Log::Contextual->import; 1 }, 'Blank Log::Contextual import dies');
