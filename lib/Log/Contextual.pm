@@ -38,8 +38,15 @@ import_arguments qw(logger package_logger default_logger);
 sub before_import {
    my ($class, $importer, $spec) = @_;
 
-   die 'Log::Contextual does not have a default import list'
+   my @tags = $class->default_import($spec)
       if $spec->config->{default};
+
+   for (@tags) {
+      die "only tags are supported for defaults at this time"
+         unless $_ =~ /^:(.*)$/;
+
+      $spec->config->{$1} = 1;
+   }
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
@@ -68,6 +75,14 @@ sub before_import {
          });
       }
    }
+}
+
+sub default_import {
+   my ($class) = shift;
+
+   die 'Log::Contextual does not have a default import list';
+
+   ()
 }
 
 sub arg_logger { $_[1] }
@@ -374,6 +389,7 @@ own C<Log::Contextual> subclass as follows:
 
  sub arg_default_logger { $_[1] || Log::Log4perl->get_logger }
  sub arg_levels { [qw(debug trace warn info error fatal custom_level)] }
+ sub default_import { ':log' }
 
  # or maybe instead of default_logger
  sub arg_package_logger { $_[1] }
@@ -391,6 +407,17 @@ if you define your subclass, and someone uses it as follows:
 
 Your C<arg_default_logger> method will get C<$foo> and your C<arg_levels>
 will get C<[qw(bar baz biff)]>;
+
+Additionally, the C<default_import> method is what happens if a user tries to
+use your subclass with no arguments.  The default just dies, but if you'd like
+to change the default to import a tag merely return the tags you'd like to
+import.  So the following will all work:
+
+ sub default_import { ':log' }
+
+ sub default_import { ':dlog' }
+
+ sub default_import { qw(:dlog :log ) }
 
 =head1 FUNCTIONS
 

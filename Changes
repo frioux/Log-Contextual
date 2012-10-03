@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - add a way to set default import options
+
 0.004202 2012-08-04
   - correct the caller_level passed into coderef, and document "both" uses of
     caller_level
