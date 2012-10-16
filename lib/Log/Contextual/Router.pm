@@ -5,6 +5,12 @@ use Scalar::Util 'blessed';
 
 with 'Log::Contextual::Role::Router';
 
+eval {
+   require Log::Log4perl;
+   die if $Log::Log4perl::VERSION < 1.29;
+   Log::Log4perl->wrapper_register(__PACKAGE__)
+};
+
 sub before_import { }
 
 sub after_import {
@@ -70,7 +76,10 @@ sub _set_package_logger_for {
 }
 
 sub get_loggers {
-   my ($self, $package, $level) = @_;
+   my ($self, $info) = @_;
+
+   my $package = $info->{package};
+
    my $logger = (
       $_[0]->{Package_Logger}->{$package} ||
       $_[0]->{Get_Logger} ||
@@ -78,11 +87,27 @@ sub get_loggers {
       die q( no logger set!  you can't try to log something without a logger! )
    );
 
-   $logger = $logger->($package, { caller_level => 2 });
+   my %info = %$info;
 
-   return $logger if $logger->${\"is_$level"};
-   return (); 
+   $info{caller_level}++;
+
+   $logger = $logger->($package, \%info);
+
+   return $logger if $logger->${\"is_${\$info->{level}}"};
+   return ();
 }
 
-1; 
+sub handle_log_request {
+   my ($self, $info, $generator, @args) = @_;
+
+   my %info = %$info;
+
+   $info{caller_level}++;
+
+   foreach my $logger ($self->get_loggers(\%info)) {
+      $logger->${\$info->{level}}($generator->(@args));
+   }
+}
+
+1;
 

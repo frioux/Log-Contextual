@@ -56,38 +56,48 @@ sub before_import {
       if ($spec->config->{log}) {
          $spec->add_export("&log_$level", sub (&@) {
             my ($code, @args) = @_;
-            my @loggers = $router->get_loggers(scalar(caller), $level);
-            foreach my $logger (@loggers) {
-               $logger->$level($code->(@args));     
-            }
+            $router->handle_log_request({
+               package => scalar(caller),
+               caller_level => 1,
+               level => $level,
+            }, $code, @args);
             return @args;
          });
          $spec->add_export("&logS_$level", sub (&@) {
-            my $code = shift;
-            my @loggers = $router->get_loggers(scalar(caller), $level);
-            foreach my $logger (@loggers) {
-               $logger->$level($code->(@_));     
-            }
-            return shift;
+            my ($code, @args) = @_;
+            $router->handle_log_request({
+               package => scalar(caller),
+               caller_level => 1,
+               level => $level,
+            }, $code, @args);
+            return $args[0];
          });
       }
       if ($spec->config->{dlog}) {
          $spec->add_export("&Dlog_$level", sub (&@) {
             my ($code, @args) = @_;
-            my $dumped = (@args?Data::Dumper::Concise::Dumper @args:'()');
-            my @loggers = $router->get_loggers(scalar(caller), $level);
-            foreach my $logger (@loggers) {
-               $logger->$level(do { local $_ = $dumped; $code->(@args); });    
-            }
+            my $wrapped = sub {
+               local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
+               &$code;
+            };
+            $router->handle_log_request({
+               package => scalar(caller),
+               caller_level => 1,
+               level => $level,
+            }, $wrapped, @args);
             return @args;
          });
          $spec->add_export("&DlogS_$level", sub (&$) {
             my ($code, $ref) = @_;
-            my $dumped = Data::Dumper::Concise::Dumper $ref;
-            my @loggers = $router->get_loggers(scalar(caller), $level); 
-            foreach my $logger (@loggers) {
-               $logger->$level(do { local $_ = $dumped; $code->($ref); });
-            }
+            my $wrapped = sub {
+               local $_ = Data::Dumper::Concise::Dumper($_[0]);
+               &$code;
+            };
+            $router->handle_log_request({
+               package => scalar(caller),
+               caller_level => 1,
+               level => $level,
+            }, $wrapped, $ref);
             return $ref;
          });
       }
