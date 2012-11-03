@@ -11,7 +11,6 @@ use Exporter::Declare;
 use Exporter::Declare::Export::Generator;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
-use Log::Contextual::Router;
 
 my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
 
@@ -36,7 +35,14 @@ export_tag dlog => ('____');
 export_tag log  => ('____');
 import_arguments qw(logger package_logger default_logger);
 
-sub arg_router { return $_[1] if defined $_[1]; our $Router_Instance ||= Log::Contextual::Router->new }
+sub arg_router {
+   return $_[1] if defined $_[1];
+   our $Router_Instance ||= do {
+      require Log::Contextual::Router;
+      Log::Contextual::Router->new
+   }
+}
+
 sub arg_logger { $_[1] }
 sub arg_levels { $_[1] || [qw(debug trace warn info error fatal)] }
 sub arg_package_logger { $_[1] }
