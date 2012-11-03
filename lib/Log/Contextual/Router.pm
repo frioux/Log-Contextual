@@ -3,7 +3,9 @@ package Log::Contextual::Router;
 use Moo;
 use Scalar::Util 'blessed';
 
-with 'Log::Contextual::Role::Router';
+with 'Log::Contextual::Role::Router',
+     'Log::Contextual::Role::Router::SetLogger',
+     'Log::Contextual::Role::Router::WithLogger';
 
 eval {
    require Log::Log4perl;

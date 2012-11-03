@@ -108,22 +108,20 @@ sub after_import { return arg_router()->after_import(@_) }
 
 sub set_logger {
    my $router = arg_router();
-   my $meth = $router->can('set_logger');
 
    die ref($router) . " does not support set_logger()"
-      unless defined $meth;
+      unless $router->does('Log::Contextual::Role::Router::SetLogger');
 
-   return $router->$meth(@_);
+   return $router->set_logger(@_);
 }
 
 sub with_logger {
    my $router = arg_router();
-   my $meth = $router->can('with_logger');
 
    die ref($router) . " does not support with_logger()"
-      unless defined $meth;
+      unless $router->does('Log::Contextual::Role::Router::WithLogger');
 
-   return $router->$meth(@_);
+   return $router->with_logger(@_);
 }
 
 1;
