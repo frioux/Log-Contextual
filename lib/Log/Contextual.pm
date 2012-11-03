@@ -36,7 +36,6 @@ export_tag log  => ('____');
 import_arguments qw(logger package_logger default_logger);
 
 sub arg_router {
-   return $_[1] if defined $_[1];
    our $Router_Instance ||= do {
       require Log::Contextual::Router;
       Log::Contextual::Router->new
