@@ -35,7 +35,7 @@ export_tag dlog => ('____');
 export_tag log  => ('____');
 import_arguments qw(logger package_logger default_logger);
 
-sub arg_router {
+sub router {
    our $Router_Instance ||= do {
       require Log::Contextual::Router;
       Log::Contextual::Router->new
@@ -49,7 +49,7 @@ sub arg_default_logger { $_[1] }
 
 sub before_import {
    my ($class, $importer, $spec) = @_;
-   my $router = $class->arg_router;
+   my $router = $class->router;
    my $exports = $spec->exports;
 
    die 'Log::Contextual does not have a default import list'
@@ -58,7 +58,7 @@ sub before_import {
    $router->before_import(@_);
 
    $spec->add_export('&set_logger', sub {
-      my $router = $class->arg_router;
+      my $router = $class->router;
 
       die ref($router) . " does not support set_logger()"
          unless $router->does('Log::Contextual::Role::Router::SetLogger');
@@ -67,7 +67,7 @@ sub before_import {
    }) if $exports->{'&set_logger'};
 
    $spec->add_export('&with_logger', sub {
-      my $router = $class->arg_router;
+      my $router = $class->router;
 
       die ref($router) . " does not support with_logger()"
          unless $router->does('Log::Contextual::Role::Router::WithLogger');
@@ -128,7 +128,7 @@ sub before_import {
    }
 }
 
-sub after_import { $_[0]->arg_router->after_import(@_) }
+sub after_import { $_[0]->router->after_import(@_) }
 
 1;
 
