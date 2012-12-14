@@ -589,9 +589,25 @@ The first six merely need to return true if that level is enabled.  The latter
 six take the results of whatever the user returned from their coderef and log
 them.  For a basic example see L<Log::Contextual::SimpleLogger>.
 
-=head1 AUTHOR
+=head1 LOG ROUTING
+
+Inbetween the loggers and the log methods is a log router that is responsible for
+finding a logger to handle the log event and passing the log information to the
+logger. This relationship is described in the documentation for
+C<Log::Contextual::Role::Router>.
+
+C<Log::Contextual> and subclasses by default share a router singleton that implements
+the with_logger() and set_logger() methods and also respects the -logger, -package_logger,
+and -default_logger import options with their associated default value methods. The router
+singleton is available as the return value of the router() method. Users of Log::Contextual
+may overload the router() method to return instances of custom log routers that could for
+example work with loggers that use a different interface.
+
+=head1 AUTHORS
 
 frew - Arthur Axel "fREW" Schmidt <frioux@gmail.com>
+
+triddle - Tyler Riddle <t.riddle@shadowcat.co.uk>
 
 =head1 DESIGNER
 
