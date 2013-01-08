@@ -16,7 +16,7 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
 
 =head1 SYNOPSIS
 
-  package Custom::Logging::Router;
+  package MyApp::Log::Router;
   
   use Moo;
   use Log::Contextual::SimpleLogger;
@@ -30,41 +30,49 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
   }
   
   sub before_import {
-     my ($self, $log_class, $importer, $spec) = @_;
-     print STDERR "Package '$importer' will import '$log_class'\n";
+     my ($self, %export_info) = @_;
+     my $exporter = $export_info{exporter};
+     my $target = $export_info{target};
+     print STDERR "Package '$target' will import from '$exporter'\n";
   }
 
   sub after_import {
-     my ($self, $log_class, $importer, $spec) = @_;
-     print STDERR "Package '$importer' has imported '$log_class'\n";
+     my ($self, %export_info) = @_;
+     my $exporter = $export_info{exporter};
+     my $target = $export_info{target};
+     print STDERR "Package '$target' has imported from '$exporter'\n";
   }
 
   sub handle_log_request {
-    my ($self, $metadata, $log_code_block, @args) = @_;
-    my $log_level_name = $metadata->{level};
-    my $logger = $self->logger;
-    my $is_active = $logger->can("is_$log_level_name");
-    
-    return unless defined $is_active && $logger->$is_active;
-    my $log_message = $log_code_block->(@args);
-    $logger->$log_level_name($log_message);
+     my ($self, %message_info) = @_;
+     my $log_code_block = $message_info{message_sub};
+     my $args = $message_info{message_args};
+     my $log_level_name = $message_info{message_level};
+     my $logger = $self->logger;
+     my $is_active = $logger->can("is_${log_level_name}");
+     
+     return unless defined $is_active && $logger->$is_active;
+     my $log_message = $log_code_block->(@$args);
+     $logger->$log_level_name($log_message);
   }
 
-  package Custom::Logging::Class;
+  package MyApp::Log::Contextual;
 
   use Moo;
-
+  use MyApp::Log::Router;
+  
   extends 'Log::Contextual';
 
-  #Almost certainly the router object should be a singleton
+  #This example router is a singleton
   sub router {
-     our $Router ||= Custom::Logging::Router->new
+     our $Router ||= MyApp::Log::Router->new
   }
 
   package main;
 
-  use strictures;
-  use Custom::Logging::Class qw(:log);
+  use strict;
+  use warnings;
+  use MyApp::Log::Contextual qw(:log);
   
   log_info { "Hello there" };
 
@@ -76,15 +84,15 @@ Log::Contextual has three parts
 
 =item Export manager and logging method generator
 
-These tasks are handled by the C<Log::Contextual> class.
+These tasks are handled by the C<Log::Contextual> package.
 
 =item Logger selection and invocation
 
-The log methods generated and exported by Log::Contextual call a method
-on a log router object which is responsible for invoking any loggers that should
-get an opportunity to receive the log message. The C<Log::Contextual::Router>
-class implements the set_logger() and with_logger() methods as well as uses the
-arg_ prefixed methods to configure itself and provide the standard C<Log::Contextual>
+The logging functions generated and exported by Log::Contextual call a method
+on an instance of a log router object which is responsible for invoking any loggers
+that should get an opportunity to receive the log message. The C<Log::Contextual::Router>
+class implements the set_logger() and with_logger() functions as well as uses the
+arg_ prefixed functions to configure itself and provide the standard C<Log::Contextual>
 logger selection API.
 
 =item Log message formatting and output
@@ -100,58 +108,53 @@ block and passing the generated message to the logging object's log method.
 
 =over 4
 
-=item before_import($self, $log_class, $importer, $spec)
+=item before_import($self, %import_info)
 
-=item after_import($self, $log_class, $importer, $spec)
+=item after_import($self,  %import_info)
 
 These two required methods are called with identical arguments at two different places
 during the import process. The before_import() method is invoked prior to the logging
-methods being exported into the consuming packages namespace. The after_import() method
-is called when the export is completed but before control returns to the package that
-imported the class.
+subroutines being exported into the target package and after_import() is called when the
+export is completed but before control returns to the package that imported the API.
 
-The arguments are as follows:
+The arguments are passed as a hash with the following keys:
 
 =over 4
 
-=item $log_class
+=item exporter
 
-This is the package name of the subclass of Log::Contextual that has been imported. It can
-also be 'Log::Contextual' itself. In the case of the synopsis the value in $log_class would be
-'Custom::Logging::Class'.
+This is the name of the package that has been imported. It can also be 'Log::Contextual' itself. In
+the case of the synopsis the value for exporter would be 'MyApp::Log::Contextual'.
 
-=item $importer
+=item target
 
-This is the package name that is importing the logging class. In the case of the synopsis the
+This is the package name that is importing the logging API. In the case of the synopsis the
 value would be 'main'.
 
-=item $spec
+=item arguments
 
-This is the import specification that is being used when exporting methods to $importer. The
-value is an unmodified C<Exporter::Declare::Specs> object.
+This is a hash reference containing the configuration values that were provided for the import. 
+The key is the name of the configuration item that was specified without the leading hyphen ('-').
+For instance if the logging API is imported as follows
+
+  use Log::Contextual qw( :log ), -logger => Custom::Logger->new({ levels => [qw( debug )] });
+
+then $import_info{arguments}->{logger} would contain that instance of Custom::Logger.
 
 =back
 
-=item handle_log_request($self, $info, $generator, @args)
+=item handle_log_request($self, %message_info)
 
-This method is called by C<Log::Contextual> when a log event happens. The arguments are as
-follows:
-
-=over 4
-
-=item $info
-
-This is the metadata describing the log event. The value is a hash reference with the following
-keys:
+This method is called by C<Log::Contextual> when a log event happens. The arguments are passed
+as a hash with the following keys
 
 =over 4
 
-=item controller
+=item exporter
 
-This is the name of the Log::Contextual subclass (or 'Log::Contextual' itself) that created
-the logging methods used to generate the log event.
+This is the name of the package that created the logging methods used to generate the log event.
 
-=item package
+=item caller_package
 
 This is the name of the package that the log event has happened inside of.
 
@@ -160,22 +163,20 @@ This is the name of the package that the log event has happened inside of.
 This is an integer that contains the value to pass to caller() that will provide
 information about the location the log event was created at.
 
-=item level
+=item log_level
 
 This is the name of the log level associated with the log event.
 
-=back
+=item message_sub
 
-=item $generator
-
-This is the message generating block associated with the log event passed as a subref. If
-the logger accepts the log request the router should execute the generator to create
+This is the message generating code block associated with the log event passed as a subref. If
+the logger accepts the log request the router should execute the subref to create
 the log message and then pass the message as a string to the logger.
 
-=item @args
+=item message_args
 
-This is the arguments provided to the log block passed through completely unmodified. When
-invoking the generator method it will almost certainly be expecting these argument values
+This is an array reference that contains the arguments given to the message generating code block.
+When invoking the message generator it will almost certainly be expecting these argument values 
 as well.
 
 =back

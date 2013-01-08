@@ -51,11 +51,12 @@ sub before_import {
    my ($class, $importer, $spec) = @_;
    my $router = $class->router;
    my $exports = $spec->exports;
+   my %router_args = (exporter => $class, target => $importer, arguments => $spec->argument_info);
 
    die 'Log::Contextual does not have a default import list'
       if $spec->config->{default};
 
-   $router->before_import(@_);
+   $router->before_import(%router_args);
 
    $spec->add_export('&set_logger', sub {
       my $router = $class->router;
@@ -80,22 +81,18 @@ sub before_import {
       if ($spec->config->{log}) {
          $spec->add_export("&log_$level", sub (&@) {
             my ($code, @args) = @_;
-            $router->handle_log_request({
-               controller => $class,
-               package => scalar(caller),
-               caller_level => 1,
-               level => $level,
-            }, $code, @args);
+            $router->handle_log_request(
+               exporter => $class, caller_package => scalar(caller), caller_level => 1,
+               message_level => $level, message_sub => $code, message_args => \@args,
+            );
             return @args;
          });
          $spec->add_export("&logS_$level", sub (&@) {
             my ($code, @args) = @_;
-            $router->handle_log_request({
-               controller => $class,
-               package => scalar(caller),
-               caller_level => 1,
-               level => $level,
-            }, $code, @args);
+            $router->handle_log_request(
+               exporter => $class, caller_package => scalar(caller), caller_level => 1,
+               message_level => $level, message_sub => $code, message_args => \@args,
+            );
             return $args[0];
          });
       }
@@ -106,12 +103,10 @@ sub before_import {
                local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
                &$code;
             };
-            $router->handle_log_request({
-               controller => $class,
-               package => scalar(caller),
-               caller_level => 1,
-               level => $level,
-            }, $wrapped, @args);
+            $router->handle_log_request(
+               exporter => $class, caller_package => scalar(caller), caller_level => 1,
+               message_level => $level, message_sub => $wrapped, message_args => \@args,
+            );
             return @args;
          });
          $spec->add_export("&DlogS_$level", sub (&$) {
@@ -120,19 +115,21 @@ sub before_import {
                local $_ = Data::Dumper::Concise::Dumper($_[0]);
                &$code;
             };
-            $router->handle_log_request({
-               controller => $class,
-               package => scalar(caller),
-               caller_level => 1,
-               level => $level,
-            }, $wrapped, $ref);
+            $router->handle_log_request(
+               exporter => $class, caller_package => scalar(caller), caller_level => 1,
+               message_level => $level, message_sub => $wrapped, message_args => [ $ref ],
+            );
             return $ref;
          });
       }
    }
 }
 
-sub after_import { $_[0]->router->after_import(@_) }
+sub after_import {
+   my ($class, $importer, $spec) = @_;
+   my %router_args = (exporter => $class, target => $importer, arguments => $spec->argument_info);
+   $class->router->after_import(%router_args);
+}
 
 1;
 
@@ -591,21 +588,22 @@ them.  For a basic example see L<Log::Contextual::SimpleLogger>.
 
 =head1 LOG ROUTING
 
-Inbetween the loggers and the log methods is a log router that is responsible for
+In between the loggers and the log functions is a log router that is responsible for
 finding a logger to handle the log event and passing the log information to the
-logger. This relationship is described in the documentation for
-C<Log::Contextual::Role::Router>.
+logger. This relationship is described in the documentation for C<Log::Contextual::Role::Router>.
 
-C<Log::Contextual> and subclasses by default share a router singleton that implements
-the with_logger() and set_logger() methods and also respects the -logger, -package_logger,
-and -default_logger import options with their associated default value methods. The router
-singleton is available as the return value of the router() method. Users of Log::Contextual
-may overload the router() method to return instances of custom log routers that could for
-example work with loggers that use a different interface.
+C<Log::Contextual> and packages that extend it will by default share a router singleton that
+implements the with_logger() and set_logger() functions and also respects the -logger,
+-package_logger, and -default_logger import options with their associated default value
+functions. The router singleton is available as the return value of the router() function. Users
+of Log::Contextual may overload router() to return instances of custom log routers that
+could for example work with loggers that use a different interface.
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 frew - Arthur Axel "fREW" Schmidt <frioux@gmail.com>
+
+=head1 CONTRIBUTORS
 
 triddle - Tyler Riddle <t.riddle@shadowcat.co.uk>
 

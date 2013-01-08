@@ -16,19 +16,21 @@ eval {
 sub before_import { }
 
 sub after_import {
-   my ($self, $controller, $importer, $spec) = @_;
-   my $config = $spec->config;
-
-   if (my $l = $controller->arg_logger($config->{logger})) {
-      $self->set_logger($l)
+   my ($self, %import_info) = @_;
+   my $exporter = $import_info{exporter};
+   my $target = $import_info{target};
+   my $config = $import_info{arguments};
+   
+   if (my $l = $exporter->arg_logger($config->{logger})) {
+      $self->set_logger($l);
    }
 
-   if (my $l = $controller->arg_package_logger($config->{package_logger})) {
-      $self->_set_package_logger_for($importer, $l)
+   if (my $l = $exporter->arg_package_logger($config->{package_logger})) {
+      $self->_set_package_logger_for($target, $l);
    }
 
-   if (my $l = $controller->arg_default_logger($config->{default_logger})) {
-      $self->_set_default_logger_for($importer, $l)
+   if (my $l = $exporter->arg_default_logger($config->{default_logger})) {
+      $self->_set_default_logger_for($target, $l);
    }
 }
 
@@ -78,10 +80,9 @@ sub _set_package_logger_for {
 }
 
 sub get_loggers {
-   my ($self, $info) = @_;
-
-   my $package = $info->{package};
-
+   my ($self, %info) = @_;
+   my $package = $info{caller_package};
+   my $log_level = $info{message_level};
    my $logger = (
       $_[0]->{Package_Logger}->{$package} ||
       $_[0]->{Get_Logger} ||
@@ -89,25 +90,23 @@ sub get_loggers {
       die q( no logger set!  you can't try to log something without a logger! )
    );
 
-   my %info = %$info;
-
    $info{caller_level}++;
-
    $logger = $logger->($package, \%info);
 
-   return $logger if $logger->${\"is_${\$info->{level}}"};
+   return $logger if $logger->${\"is_${log_level}"};
    return ();
 }
 
 sub handle_log_request {
-   my ($self, $info, $generator, @args) = @_;
+   my ($self, %message_info) = @_;
+   my $generator = $message_info{message_sub};
+   my $args = $message_info{message_args};
+   my $log_level = $message_info{message_level};
 
-   my %info = %$info;
+   $message_info{caller_level}++;
 
-   $info{caller_level}++;
-
-   foreach my $logger ($self->get_loggers(\%info)) {
-      $logger->${\$info->{level}}($generator->(@args));
+   foreach my $logger ($self->get_loggers(%message_info)) {
+      $logger->$log_level($generator->(@$args));
    }
 }
 
