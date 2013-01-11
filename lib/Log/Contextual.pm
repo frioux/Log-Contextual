@@ -179,9 +179,11 @@ Log::Contextual - Simple logging interface with a contextual log
      levels => [qw( trace debug )]
    });
 
+   my @args = @_;
+
    with_logger $minilogger => sub {
      log_trace { 'foo entered' };
-     my ($foo, $bar) = Dlog_trace { "params for foo: $_" } @_;
+     my ($foo, $bar) = Dlog_trace { "params for foo: $_" } @args;
      # ...
      log_trace { 'foo left' };
    };
