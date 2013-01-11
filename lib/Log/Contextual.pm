@@ -55,27 +55,19 @@ sub before_import {
 
    $router->before_import(%router_args);
 
-   $spec->add_export(
-      '&set_logger',
-      sub {
-         my $router = $class->router;
+   if ($exports->{'&set_logger'}) {
+      die ref($router) . " does not support set_logger()"
+        unless $router->does('Log::Contextual::Role::Router::SetLogger');
 
-         die ref($router) . " does not support set_logger()"
-           unless $router->does('Log::Contextual::Role::Router::SetLogger');
+      $spec->add_export('&set_logger', sub { $router->set_logger(@_) })
+   }
 
-         return $router->set_logger(@_);
-      }) if $exports->{'&set_logger'};
+   if ($exports->{'&with_logger'}) {
+      die ref($router) . " does not support with_logger()"
+        unless $router->does('Log::Contextual::Role::Router::WithLogger');
 
-   $spec->add_export(
-      '&with_logger',
-      sub {
-         my $router = $class->router;
-
-         die ref($router) . " does not support with_logger()"
-           unless $router->does('Log::Contextual::Role::Router::WithLogger');
-
-         return $router->with_logger(@_);
-      }) if $exports->{'&with_logger'};
+      $spec->add_export('&with_logger', sub { $router->with_logger(@_) })
+   }
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
