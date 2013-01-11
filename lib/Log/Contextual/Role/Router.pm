@@ -17,18 +17,18 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
 =head1 SYNOPSIS
 
   package MyApp::Log::Router;
-  
+
   use Moo;
   use Log::Contextual::SimpleLogger;
-  
+
   with 'Log::Contextual::Role::Router';
-  
+
   has logger => (is => 'lazy');
-  
+
   sub _build_logger {
      return Log::Contextual::SimpleLogger->new({ levels_upto => 'debug' });
   }
-  
+
   sub before_import {
      my ($self, %export_info) = @_;
      my $exporter = $export_info{exporter};
@@ -50,7 +50,7 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
      my $log_level_name = $message_info{message_level};
      my $logger = $self->logger;
      my $is_active = $logger->can("is_${log_level_name}");
-     
+
      return unless defined $is_active && $logger->$is_active;
      my $log_message = $log_code_block->(@$args);
      $logger->$log_level_name($log_message);
@@ -60,7 +60,7 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
 
   use Moo;
   use MyApp::Log::Router;
-  
+
   extends 'Log::Contextual';
 
   #This example router is a singleton
@@ -73,7 +73,7 @@ Log::Contextual::Role::Router - Abstract interface between loggers and logging c
   use strict;
   use warnings;
   use MyApp::Log::Contextual qw(:log);
-  
+
   log_info { "Hello there" };
 
 =head1 DESCRIPTION
@@ -133,7 +133,7 @@ value would be 'main'.
 
 =item arguments
 
-This is a hash reference containing the configuration values that were provided for the import. 
+This is a hash reference containing the configuration values that were provided for the import.
 The key is the name of the configuration item that was specified without the leading hyphen ('-').
 For instance if the logging API is imported as follows
 
@@ -176,7 +176,7 @@ the log message and then pass the message as a string to the logger.
 =item message_args
 
 This is an array reference that contains the arguments given to the message generating code block.
-When invoking the message generator it will almost certainly be expecting these argument values 
+When invoking the message generator it will almost certainly be expecting these argument values
 as well.
 
 =back

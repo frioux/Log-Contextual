@@ -20,9 +20,9 @@ eval {
 
 # ____ is because tags must have at least one export and we don't want to
 # export anything but the levels selected
-sub ____ {}
+sub ____ { }
 
-exports (qw(____ set_logger with_logger ));
+exports(qw(____ set_logger with_logger ));
 
 export_tag dlog => ('____');
 export_tag log  => ('____');
@@ -32,95 +32,131 @@ sub router {
    our $Router_Instance ||= do {
       require Log::Contextual::Router;
       Log::Contextual::Router->new
-   }
+     }
 }
 
-sub arg_logger { $_[1] }
-sub arg_levels { $_[1] || [qw(debug trace warn info error fatal)] }
+sub arg_logger         { $_[1] }
+sub arg_levels         { $_[1] || [qw(debug trace warn info error fatal)] }
 sub arg_package_logger { $_[1] }
 sub arg_default_logger { $_[1] }
 
 sub before_import {
    my ($class, $importer, $spec) = @_;
-   my $router = $class->router;
-   my $exports = $spec->exports;
-   my %router_args = (exporter => $class, target => $importer, arguments => $spec->argument_info);
+   my $router      = $class->router;
+   my $exports     = $spec->exports;
+   my %router_args = (
+      exporter  => $class,
+      target    => $importer,
+      arguments => $spec->argument_info
+   );
 
    die 'Log::Contextual does not have a default import list'
-      if $spec->config->{default};
+     if $spec->config->{default};
 
    $router->before_import(%router_args);
 
-   $spec->add_export('&set_logger', sub {
-      my $router = $class->router;
+   $spec->add_export(
+      '&set_logger',
+      sub {
+         my $router = $class->router;
 
-      die ref($router) . " does not support set_logger()"
-         unless $router->does('Log::Contextual::Role::Router::SetLogger');
+         die ref($router) . " does not support set_logger()"
+           unless $router->does('Log::Contextual::Role::Router::SetLogger');
 
-      return $router->set_logger(@_);
-   }) if $exports->{'&set_logger'};
+         return $router->set_logger(@_);
+      }) if $exports->{'&set_logger'};
 
-   $spec->add_export('&with_logger', sub {
-      my $router = $class->router;
+   $spec->add_export(
+      '&with_logger',
+      sub {
+         my $router = $class->router;
 
-      die ref($router) . " does not support with_logger()"
-         unless $router->does('Log::Contextual::Role::Router::WithLogger');
+         die ref($router) . " does not support with_logger()"
+           unless $router->does('Log::Contextual::Role::Router::WithLogger');
 
-      return $router->with_logger(@_);
-   }) if $exports->{'&with_logger'};
+         return $router->with_logger(@_);
+      }) if $exports->{'&with_logger'};
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
       if ($spec->config->{log}) {
-         $spec->add_export("&log_$level", sub (&@) {
-            my ($code, @args) = @_;
-            $router->handle_log_request(
-               exporter => $class, caller_package => scalar(caller), caller_level => 1,
-               message_level => $level, message_sub => $code, message_args => \@args,
-            );
-            return @args;
-         });
-         $spec->add_export("&logS_$level", sub (&@) {
-            my ($code, @args) = @_;
-            $router->handle_log_request(
-               exporter => $class, caller_package => scalar(caller), caller_level => 1,
-               message_level => $level, message_sub => $code, message_args => \@args,
-            );
-            return $args[0];
-         });
+         $spec->add_export(
+            "&log_$level",
+            sub (&@) {
+               my ($code, @args) = @_;
+               $router->handle_log_request(
+                  exporter       => $class,
+                  caller_package => scalar(caller),
+                  caller_level   => 1,
+                  message_level  => $level,
+                  message_sub    => $code,
+                  message_args   => \@args,
+               );
+               return @args;
+            });
+         $spec->add_export(
+            "&logS_$level",
+            sub (&@) {
+               my ($code, @args) = @_;
+               $router->handle_log_request(
+                  exporter       => $class,
+                  caller_package => scalar(caller),
+                  caller_level   => 1,
+                  message_level  => $level,
+                  message_sub    => $code,
+                  message_args   => \@args,
+               );
+               return $args[0];
+            });
       }
       if ($spec->config->{dlog}) {
-         $spec->add_export("&Dlog_$level", sub (&@) {
-            my ($code, @args) = @_;
-            my $wrapped = sub {
-               local $_ = (@_?Data::Dumper::Concise::Dumper @_:'()');
-               &$code;
-            };
-            $router->handle_log_request(
-               exporter => $class, caller_package => scalar(caller), caller_level => 1,
-               message_level => $level, message_sub => $wrapped, message_args => \@args,
-            );
-            return @args;
-         });
-         $spec->add_export("&DlogS_$level", sub (&$) {
-            my ($code, $ref) = @_;
-            my $wrapped = sub {
-               local $_ = Data::Dumper::Concise::Dumper($_[0]);
-               &$code;
-            };
-            $router->handle_log_request(
-               exporter => $class, caller_package => scalar(caller), caller_level => 1,
-               message_level => $level, message_sub => $wrapped, message_args => [ $ref ],
-            );
-            return $ref;
-         });
+         $spec->add_export(
+            "&Dlog_$level",
+            sub (&@) {
+               my ($code, @args) = @_;
+               my $wrapped = sub {
+                  local $_ = (@_ ? Data::Dumper::Concise::Dumper @_ : '()');
+                  &$code;
+               };
+               $router->handle_log_request(
+                  exporter       => $class,
+                  caller_package => scalar(caller),
+                  caller_level   => 1,
+                  message_level  => $level,
+                  message_sub    => $wrapped,
+                  message_args   => \@args,
+               );
+               return @args;
+            });
+         $spec->add_export(
+            "&DlogS_$level",
+            sub (&$) {
+               my ($code, $ref) = @_;
+               my $wrapped = sub {
+                  local $_ = Data::Dumper::Concise::Dumper($_[0]);
+                  &$code;
+               };
+               $router->handle_log_request(
+                  exporter       => $class,
+                  caller_package => scalar(caller),
+                  caller_level   => 1,
+                  message_level  => $level,
+                  message_sub    => $wrapped,
+                  message_args   => [$ref],
+               );
+               return $ref;
+            });
       }
    }
 }
 
 sub after_import {
    my ($class, $importer, $spec) = @_;
-   my %router_args = (exporter => $class, target => $importer, arguments => $spec->argument_info);
+   my %router_args = (
+      exporter  => $class,
+      target    => $importer,
+      arguments => $spec->argument_info
+   );
    $class->router->after_import(%router_args);
 }
 

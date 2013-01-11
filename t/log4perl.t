@@ -3,12 +3,13 @@ use warnings;
 
 use Test::More;
 
-if (eval <<'EOE'
+if (
+   eval <<'EOE'
 require Log::Log4perl;
 die if $Log::Log4perl::VERSION < 1.29;
 1
 EOE
-) {
+  ) {
    plan tests => 2;
 } else {
    plan skip_all => 'Log::Log4perl 1.29 not installed'
@@ -32,7 +33,10 @@ open my $log, '<', 'myerrs.log';
 my @datas = <$log>;
 close $log;
 
-is $datas[0], "file:t/log4perl.t line:$elines[0] method:main:: - err FIRST\n", 'file and line work with Log4perl';
-is $datas[1], "file:t/log4perl.t line:$elines[1] method:main::foo - err SECOND\n", 'file and line work with Log4perl in a sub';
+is $datas[0], "file:t/log4perl.t line:$elines[0] method:main:: - err FIRST\n",
+  'file and line work with Log4perl';
+is $datas[1],
+  "file:t/log4perl.t line:$elines[1] method:main::foo - err SECOND\n",
+  'file and line work with Log4perl in a sub';
 
 unlink 'myerrs.log';

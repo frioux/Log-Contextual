@@ -4,53 +4,53 @@ use strict;
 use warnings;
 
 {
-  for my $name (qw( trace debug info warn error fatal )) {
+   for my $name (qw( trace debug info warn error fatal )) {
 
-    no strict 'refs';
+      no strict 'refs';
 
-    *{$name} = sub {
-      my $self = shift;
+      *{$name} = sub {
+         my $self = shift;
 
-      $self->_log( $name, @_ )
-        if ($self->{$name});
-    };
+         $self->_log($name, @_)
+           if ($self->{$name});
+      };
 
-    *{"is_$name"} = sub {
-      my $self = shift;
-      return $self->{$name};
-    };
-  }
+      *{"is_$name"} = sub {
+         my $self = shift;
+         return $self->{$name};
+      };
+   }
 }
 
 sub new {
-  my ($class, $args) = @_;
-  my $self = bless {}, $class;
+   my ($class, $args) = @_;
+   my $self = bless {}, $class;
 
-  $self->{$_} = 1 for @{$args->{levels}};
-  $self->{coderef} = $args->{coderef} || sub { print STDERR @_};
+   $self->{$_} = 1 for @{$args->{levels}};
+   $self->{coderef} = $args->{coderef} || sub { print STDERR @_ };
 
-  if (my $upto = $args->{levels_upto}) {
+   if (my $upto = $args->{levels_upto}) {
 
-    my @levels = (qw( trace debug info warn error fatal ));
-    my $i = 0;
-    for (@levels) {
-      last if $upto eq $_;
-      $i++
-    }
-    for ($i..$#levels) {
-      $self->{$levels[$_]} = 1
-    }
+      my @levels = (qw( trace debug info warn error fatal ));
+      my $i      = 0;
+      for (@levels) {
+         last if $upto eq $_;
+         $i++
+      }
+      for ($i .. $#levels) {
+         $self->{$levels[$_]} = 1
+      }
 
-  }
-  return $self;
+   }
+   return $self;
 }
 
 sub _log {
-  my $self    = shift;
-  my $level   = shift;
-  my $message = join( "\n", @_ );
-  $message .= "\n" unless $message =~ /\n$/;
-  $self->{coderef}->(sprintf( "[%s] %s", $level, $message ));
+   my $self    = shift;
+   my $level   = shift;
+   my $message = join("\n", @_);
+   $message .= "\n" unless $message =~ /\n$/;
+   $self->{coderef}->(sprintf("[%s] %s", $level, $message));
 }
 
 1;

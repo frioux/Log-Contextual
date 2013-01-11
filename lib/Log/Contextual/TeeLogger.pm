@@ -4,38 +4,38 @@ use strict;
 use warnings;
 
 {
-  for my $name (qw( trace debug info warn error fatal )) {
+   for my $name (qw( trace debug info warn error fatal )) {
 
-    no strict 'refs';
+      no strict 'refs';
 
-    *{$name} = sub {
-      my $self = shift;
+      *{$name} = sub {
+         my $self = shift;
 
-      foreach my $logger (@{$self->{loggers}}) {
-        $logger->$name(@_);
-      }
-    };
+         foreach my $logger (@{$self->{loggers}}) {
+            $logger->$name(@_);
+         }
+      };
 
-    my $is_name = "is_${name}";
+      my $is_name = "is_${name}";
 
-    *{$is_name} = sub {
-      my $self = shift;
-      foreach my $logger (@{$self->{loggers}}) {
-        return 1 if $logger->$is_name(@_);
-      }
-      return 0;
-    };
-  }
+      *{$is_name} = sub {
+         my $self = shift;
+         foreach my $logger (@{$self->{loggers}}) {
+            return 1 if $logger->$is_name(@_);
+         }
+         return 0;
+      };
+   }
 }
 
 sub new {
-  my ($class, $args) = @_;
-  my $self = bless {}, $class;
+   my ($class, $args) = @_;
+   my $self = bless {}, $class;
 
-  ref($self->{loggers} = $args->{loggers}) eq 'ARRAY'
-    or die "No loggers passed to tee logger";
+   ref($self->{loggers} = $args->{loggers}) eq 'ARRAY'
+     or die "No loggers passed to tee logger";
 
-  return $self;
+   return $self;
 }
 
 1;
