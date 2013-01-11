@@ -13,6 +13,24 @@ eval {
    Log::Log4perl->wrapper_register(__PACKAGE__)
 };
 
+has _default_logger => (
+   is => 'ro',
+   default => sub { {} },
+   init_arg => undef,
+);
+
+has _package_logger => (
+   is => 'ro',
+   default => sub { {} },
+   init_arg => undef,
+);
+
+has _get_logger => (
+   is => 'ro',
+   default => sub { {} },
+   init_arg => undef,
+);
+
 sub before_import { }
 
 sub after_import {
@@ -20,7 +38,7 @@ sub after_import {
    my $exporter = $import_info{exporter};
    my $target = $import_info{target};
    my $config = $import_info{arguments};
-   
+
    if (my $l = $exporter->arg_logger($config->{logger})) {
       $self->set_logger($l);
    }
@@ -41,7 +59,7 @@ sub with_logger {
          unless blessed($logger);
       $logger = do { my $l = $logger; sub { $l } }
    }
-   local $_[0]->{Get_Logger} = $logger;
+   local $_[0]->_get_logger->{l} = $logger;
    $_[2]->();
 }
 
@@ -54,9 +72,8 @@ sub set_logger {
    }
 
    warn 'set_logger (or -logger) called more than once!  This is a bad idea!'
-      if $_[0]->{Get_Logger};
-   $_[0]->{Get_Logger} = $logger;
-
+      if $_[0]->_get_logger->{l};
+   $_[0]->_get_logger->{l} = $logger;
 }
 
 sub _set_default_logger_for {
@@ -66,7 +83,7 @@ sub _set_default_logger_for {
          unless blessed($logger);
       $logger = do { my $l = $logger; sub { $l } }
    }
-   $_[0]->{Default_Logger}->{$_[1]} = $logger
+   $_[0]->_default_logger->{$_[1]} = $logger
 }
 
 sub _set_package_logger_for {
@@ -76,7 +93,7 @@ sub _set_package_logger_for {
          unless blessed($logger);
       $logger = do { my $l = $logger; sub { $l } }
    }
-   $_[0]->{Package_Logger}->{$_[1]} = $logger
+   $_[0]->_package_logger->{$_[1]} = $logger
 }
 
 sub get_loggers {
@@ -84,9 +101,9 @@ sub get_loggers {
    my $package = $info{caller_package};
    my $log_level = $info{message_level};
    my $logger = (
-      $_[0]->{Package_Logger}->{$package} ||
-      $_[0]->{Get_Logger} ||
-      $_[0]->{Default_Logger}->{$package} ||
+      $_[0]->_package_logger->{$package} ||
+      $_[0]->_get_logger->{l} ||
+      $_[0]->_default_logger->{$package} ||
       die q( no logger set!  you can't try to log something without a logger! )
    );
 
