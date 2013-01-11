@@ -81,6 +81,7 @@ sub before_import {
          $spec->add_export("&log_$level", sub (&@) {
             my ($code, @args) = @_;
             $router->handle_log_request({
+               controller => $class,
                package => scalar(caller),
                caller_level => 1,
                level => $level,
@@ -90,6 +91,7 @@ sub before_import {
          $spec->add_export("&logS_$level", sub (&@) {
             my ($code, @args) = @_;
             $router->handle_log_request({
+               controller => $class,
                package => scalar(caller),
                caller_level => 1,
                level => $level,
@@ -105,6 +107,7 @@ sub before_import {
                &$code;
             };
             $router->handle_log_request({
+               controller => $class,
                package => scalar(caller),
                caller_level => 1,
                level => $level,
@@ -118,6 +121,7 @@ sub before_import {
                &$code;
             };
             $router->handle_log_request({
+               controller => $class,
                package => scalar(caller),
                caller_level => 1,
                level => $level,
