@@ -12,10 +12,6 @@ use Exporter::Declare::Export::Generator;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
 
-my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
-
-my @log = ((map "log_$_", @levels), (map "logS_$_", @levels));
-
 eval {
    require Log::Log4perl;
    die if $Log::Log4perl::VERSION < 1.29;
@@ -26,10 +22,7 @@ eval {
 # export anything but the levels selected
 sub ____ {}
 
-exports ('____',
-   @dlog, @log,
-   qw( set_logger with_logger )
-);
+exports (qw(____ set_logger with_logger ));
 
 export_tag dlog => ('____');
 export_tag log  => ('____');
