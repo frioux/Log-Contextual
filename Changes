@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - merge unpushed 0.004300 into master (frew--, Tyler Riddle++)
+
 0.005000_02 2013-01-15
  - add missing changelog entry (derp)
 
@@ -9,6 +11,9 @@ ChangeLog for Log-Contextual
     using Log::Contextual can guard against modules using set_logger (or
     something like that) and changing their logger.  See the new
     Log::Contextual::Role::Router for more information
+
+0.004300 2012-10-03
+  - add a way to set default import tags
 
 0.004202 2012-08-04
   - correct the caller_level passed into coderef, and document "both" uses of
