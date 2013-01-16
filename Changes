@@ -1,5 +1,14 @@
 ChangeLog for Log-Contextual
 
+ - add missing changelog entry (derp)
+
+0.005000_01 2013-01-11
+  - significant changes in the way Log::Contexual works, but the upshot of it is
+    that Log::Contextual is now much less global than before, and applications
+    using Log::Contextual can guard against modules using set_logger (or
+    something like that) and changing their logger.  See the new
+    Log::Contextual::Role::Router for more information
+
 0.004202 2012-08-04
   - correct the caller_level passed into coderef, and document "both" uses of
     caller_level
