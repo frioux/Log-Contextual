@@ -1,5 +1,7 @@
 ChangeLog for Log-Contextual
 
+  - Fix RT#83267 (Tyler Riddle)
+
 0.005001 2013-02-07
   - No changes from previous dev release
 

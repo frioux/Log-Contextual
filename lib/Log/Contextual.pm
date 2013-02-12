@@ -13,6 +13,10 @@ use Exporter::Declare::Export::Generator;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
 
+my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
+
+my @log = ((map "log_$_", @levels), (map "logS_$_", @levels));
+
 eval {
    require Log::Log4perl;
    die if $Log::Log4perl::VERSION < 1.29;
@@ -23,7 +27,10 @@ eval {
 # export anything but the levels selected
 sub ____ { }
 
-exports(qw(____ set_logger with_logger ));
+exports ('____',
+   @dlog, @log,
+   qw( set_logger with_logger )
+);
 
 export_tag dlog => ('____');
 export_tag log  => ('____');
@@ -87,7 +94,7 @@ sub before_import {
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
-      if ($spec->config->{log}) {
+      if ($spec->config->{log} || $exports->{"&log_$level"}) {
          $spec->add_export(
             "&log_$level",
             sub (&@) {
@@ -102,6 +109,8 @@ sub before_import {
                );
                return @args;
             });
+      }
+      if ($spec->config->{log} || $exports->{"&logS_$level"}) {
          $spec->add_export(
             "&logS_$level",
             sub (&@) {
@@ -117,7 +126,7 @@ sub before_import {
                return $args[0];
             });
       }
-      if ($spec->config->{dlog}) {
+      if ($spec->config->{dlog} || $exports->{"&Dlog_$level"}) {
          $spec->add_export(
             "&Dlog_$level",
             sub (&@) {
@@ -136,6 +145,8 @@ sub before_import {
                );
                return @args;
             });
+      }
+      if ($spec->config->{dlog} || $exports->{"&DlogS_$level"}) {
          $spec->add_export(
             "&DlogS_$level",
             sub (&$) {
