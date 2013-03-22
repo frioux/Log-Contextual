@@ -1,5 +1,9 @@
 ChangeLog for Log-Contextual
 
+  - Yell loudly if a user tries to use Log::Contextual::set_logger() or
+    Log::Contextual::with_logger() (aka internals that don't work anymore)
+    directly
+
 0.005002 2013-02-14 (♥)
   - Fix RT#83267 (Tyler Riddle)
 

@@ -179,6 +179,16 @@ sub after_import {
    $class->router->after_import(%router_args);
 }
 
+for (qw(set with)) {
+   no strict 'refs';
+   my $sub = "${_}_logger";
+   *{"Log::Contextual::$sub"} = sub {
+      die "$sub is no longer a direct sub in Log::Contextual.  " .
+      'Note that this feature was never tested nor documented.  ' .
+      "Please fix your code to import $sub instead of trying to use it directly"
+   }
+}
+
 1;
 
 __END__
