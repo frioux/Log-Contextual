@@ -342,7 +342,7 @@ supporting those levels is as easy as doing
 =head2 -package_logger
 
 The C<-package_logger> import option is similar to the C<-logger> import option
-except C<-package_logger> sets the the logger for the current package.
+except C<-package_logger> sets the logger for the current package.
 
 Unlike L</-default_logger>, C<-package_logger> cannot be overridden with
 L</set_logger>.
@@ -360,7 +360,7 @@ CPAN we recommend L<Log::Contextual::WarnLogger> for your package logger.
 =head2 -default_logger
 
 The C<-default_logger> import option is similar to the C<-logger> import option
-except C<-default_logger> sets the the B<default> logger for the current package.
+except C<-default_logger> sets the B<default> logger for the current package.
 
 Basically it sets the logger to be used if C<set_logger> is never called; so
 
