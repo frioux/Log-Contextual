@@ -1,5 +1,6 @@
 Revision history for Log-Contextual
 
+0.005005 2013-08-08
   - Fix minimum version of Exporter::Declare
 
 0.005004 2013-08-08
