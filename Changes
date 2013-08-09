@@ -1,5 +1,6 @@
 Revision history for Log-Contextual
 
+0.005004 2013-08-08
   - Dep on a newer version of Moo for multiple role composition
 
 0.005003 2013-03-21
