@@ -1,5 +1,7 @@
 Revision history for Log-Contextual
 
+  - Add Log::Contextual::Easy for simple LC usage (Jakob Voß)
+
 0.005005 2013-08-08
   - Fix minimum version of Exporter::Declare
 
