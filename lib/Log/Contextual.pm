@@ -315,7 +315,7 @@ wide.
 =head2 -logger
 
 When you import this module you may use C<-logger> as a shortcut for
-L<set_logger>, for example:
+L</"set_logger">, for example:
 
  use Log::Contextual::SimpleLogger;
  use Log::Contextual qw( :dlog ),
@@ -423,6 +423,9 @@ import.  So the following will all work:
  sub default_import { ':dlog' }
 
  sub default_import { qw(:dlog :log ) }
+
+See L<Log::Contextual::Easy> for an example of a subclass of C<Log::Contextual>
+that makes use of default import options.
 
 =head1 FUNCTIONS
 
@@ -677,7 +680,11 @@ frew - Arthur Axel "fREW" Schmidt <frioux@gmail.com>
 
 =head1 CONTRIBUTORS
 
+=encoding utf8
+
 triddle - Tyler Riddle <t.riddle@shadowcat.co.uk>
+
+voj - Jakob Voß <voss@gbv.de>
 
 =head1 DESIGNER
 
@@ -685,7 +692,7 @@ mst - Matt S. Trout <mst@shadowcat.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 the Log::Contextual L</AUTHOR> and L</DESIGNER> as listed
+Copyright (c) 2013 the Log::Contextual L</AUTHOR> and L</DESIGNER> as listed
 above.
 
 =head1 LICENSE
