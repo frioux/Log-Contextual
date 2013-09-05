@@ -1,4 +1,4 @@
-package Log::Contextual::Easy;
+package Log::Contextual::Easy::Default;
 
 use base 'Log::Contextual';
 
@@ -21,14 +21,14 @@ __END__
 
 =head1 NAME
 
-Log::Contextual::Easy - Import all logging methods with WarnLogger as default
+Log::Contextual::Easy::Default - Import all logging methods with WarnLogger as default
 
 =head1 SYNOPSIS
 
 In your module:
 
  package My::Module;
- use Log::Contextual::Easy;
+ use Log::Contextual::Easy::Default;
 
  log_debug { "your message" };
  Dlog_trace { $_ } @vars;

@@ -1,5 +1,5 @@
 package My::Module;
-use Log::Contextual::Easy;
+use Log::Contextual::Easy::Default;
 
 sub log {
     Dlog_fatal { $_ }
