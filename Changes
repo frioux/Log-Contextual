@@ -1,5 +1,6 @@
 Revision history for Log-Contextual
 
+0.006000 2013-09-05
   - Add Log::Contextual::Easy::Default for simple LC usage (Jakob Voß)
   - Add Log::Contextual::Easy::Package for more different simple LC usage
 
