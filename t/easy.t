@@ -4,7 +4,8 @@ use warnings;
 use Test::More;
 
 use lib 't/lib';
-use My::Module; # makes use of Log::Contextual::Easy;
+use My::Module; # makes use of Log::Contextual::Easy::Default;
+use My::Module2; # makes use of Log::Contextual::Easy::Package;
 
 # capture logging messages of My::Module, mapping "[...] xxx" to "...$sep"
 sub logshort($$) {
@@ -22,13 +23,16 @@ local $SIG{__WARN__} = logshort \$cap_warn, '!';
 
 {
     My::Module::log();
+    My::Module2::log();
     is($cap_warn, undef, 'no logging by default');
 }
 
 {
     local $ENV{MY_MODULE_UPTO} = 'info';
+    local $ENV{MY_MODULE2_UPTO} = 'info';
     My::Module::log();
-    is($cap_warn, "info!warn!error!fatal!", 'WarnLogger enabled via ENV');
+    My::Module2::log();
+    is($cap_warn, "info!warn!error!fatal!info!warn!error!fatal!", 'WarnLogger enabled via ENV');
     $cap_warn = '';
 }
 
@@ -48,10 +52,12 @@ local $SIG{__WARN__} = logshort \$cap_warn, '!';
     
     with_logger $with_logger => sub {
         My::Module::log();
+        My::Module2::log(); # will not be overridden
     };
     is($cap_with, 'trace|info|fatal|', 'with_logger');
 
     My::Module::log();
+    My::Module2::log(); # will not be overridden
     is($cap_set, 'info/warn/error/', 'set_logger');
 
     is($cap_warn, '', 'no warnings if with_logger or set_logger');

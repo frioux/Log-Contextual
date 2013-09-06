@@ -1,8 +1,8 @@
-package Log::Contextual::Easy::Default;
+package Log::Contextual::Easy::Package;
 
 use base 'Log::Contextual';
 
-sub arg_default_logger {
+sub arg_package_logger {
    if ($_[1]) {
       return $_[1];
    } else {
@@ -21,14 +21,14 @@ __END__
 
 =head1 NAME
 
-Log::Contextual::Easy::Default - Import all logging methods with WarnLogger as default
+Log::Contextual::Easy::Package - Import all logging methods with WarnLogger as default package logger
 
 =head1 SYNOPSIS
 
 In your module:
 
  package My::Module;
- use Log::Contextual::Easy::Default;
+ use Log::Contextual::Easy::Package;
 
  log_debug { "your message" };
  Dlog_trace { $_ } @vars;
@@ -53,7 +53,7 @@ L<logS_...|Log::Contextual/"logS_$level">,
 L<Dlog_...|Log::Contextual/"Dlog_$level">, and
 L<Dlog...|Log::Contextual/"DlogS_$level">) are exported.
 
-For what C<::Default> implies, see L<Log::Contextual/-default_logger>.
+For what C<::Package> implies, see L<Log::Contextual/-package_logger>.
 
 =head1 SEE ALSO
 
@@ -61,6 +61,6 @@ For what C<::Default> implies, see L<Log::Contextual/-default_logger>.
 
 =item L<Log::Contextual>
 
-=item L<Log::Contextual::Easy::Package>
+=item L<Log::Contextual::Easy::Default>
 
 =back
