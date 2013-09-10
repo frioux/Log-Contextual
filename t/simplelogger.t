@@ -70,8 +70,8 @@ ok(
 
 my $response;
 my $l2 = Log::Contextual::SimpleLogger->new({
-      levels  => [qw{trace debug info warn error fatal}],
-      coderef => sub { $response = $_[0] },
+   levels  => [qw{trace debug info warn error fatal}],
+   coderef => sub { $response = $_[0] },
 });
 {
    local $SIG{__WARN__} = sub { };    # do this just to hide warning for tests

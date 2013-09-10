@@ -9,18 +9,18 @@ my ($var1, $var2, $var3);
 my $complex_dispatcher = do {
 
    my $l1 = Log::Contextual::SimpleLogger->new({
-         levels  => [qw(trace debug info warn error fatal)],
-         coderef => sub { $var1 = shift },
+      levels  => [qw(trace debug info warn error fatal)],
+      coderef => sub { $var1 = shift },
    });
 
    my $l2 = Log::Contextual::SimpleLogger->new({
-         levels  => [qw(trace debug info warn error fatal)],
-         coderef => sub { $var2 = shift },
+      levels  => [qw(trace debug info warn error fatal)],
+      coderef => sub { $var2 = shift },
    });
 
    my $l3 = Log::Contextual::SimpleLogger->new({
-         levels  => [qw(trace debug info warn error fatal)],
-         coderef => sub { $var3 = shift },
+      levels  => [qw(trace debug info warn error fatal)],
+      coderef => sub { $var3 = shift },
    });
 
    my %registry = (

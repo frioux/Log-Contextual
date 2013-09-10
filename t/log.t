@@ -11,18 +11,18 @@ my $var1;
 my $var2;
 my $var3;
 my $var_logger1 = Log::Contextual::SimpleLogger->new({
-      levels  => [qw(trace debug info warn error fatal)],
-      coderef => sub { $var1 = shift },
+   levels  => [qw(trace debug info warn error fatal)],
+   coderef => sub { $var1 = shift },
 });
 
 my $var_logger2 = Log::Contextual::SimpleLogger->new({
-      levels  => [qw(trace debug info warn error fatal)],
-      coderef => sub { $var2 = shift },
+   levels  => [qw(trace debug info warn error fatal)],
+   coderef => sub { $var2 = shift },
 });
 
 my $var_logger3 = Log::Contextual::SimpleLogger->new({
-      levels  => [qw(trace debug info warn error fatal)],
-      coderef => sub { $var3 = shift },
+   levels  => [qw(trace debug info warn error fatal)],
+   coderef => sub { $var3 = shift },
 });
 
 SETLOGGER: {

@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 our $VERSION = '0.006000';
-$VERSION = eval $VERSION if $VERSION =~ /_/; # numify for warning-free dev releases
+$VERSION = eval $VERSION
+  if $VERSION =~ /_/;    # numify for warning-free dev releases
 
 my @levels = qw(debug trace warn info error fatal);
 
@@ -27,10 +28,7 @@ eval {
 # export anything but the levels selected
 sub ____ { }
 
-exports ('____',
-   @dlog, @log,
-   qw( set_logger with_logger )
-);
+exports('____', @dlog, @log, qw( set_logger with_logger ));
 
 export_tag dlog => ('____');
 export_tag log  => ('____');
@@ -183,10 +181,10 @@ for (qw(set with)) {
    no strict 'refs';
    my $sub = "${_}_logger";
    *{"Log::Contextual::$sub"} = sub {
-      die "$sub is no longer a direct sub in Log::Contextual.  " .
-      'Note that this feature was never tested nor documented.  ' .
-      "Please fix your code to import $sub instead of trying to use it directly"
-   }
+      die "$sub is no longer a direct sub in Log::Contextual.  "
+        . 'Note that this feature was never tested nor documented.  '
+        . "Please fix your code to import $sub instead of trying to use it directly"
+     }
 }
 
 1;
