@@ -155,16 +155,13 @@ works.
 
 Arguments: C<< Dict[ env_prefix => Str, levels => List ] $conf >>
 
- my $l = Log::Contextual::WarnLogger->new({
-   env_prefix => 'BAR'
- });
+ my $l = Log::Contextual::WarnLogger->new({ env_prefix => 'BAR' });
 
 or:
 
  my $l = Log::Contextual::WarnLogger->new({
    env_prefix => 'BAR',
-   levels => [ 'level1', 'level2' ]
-
+   levels => [ 'level1', 'level2' ],
  });
 
 Creates a new logger object where C<env_prefix> defines what the prefix is for
