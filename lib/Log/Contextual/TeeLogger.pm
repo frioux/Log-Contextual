@@ -1,5 +1,7 @@
 package Log::Contextual::TeeLogger;
 
+# ABSTRACT: Output to more than one logger
+
 use strict;
 use warnings;
 
@@ -41,10 +43,6 @@ sub new {
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual::TeeLogger - Output to more than one logger
 
 =head1 SYNOPSIS
 
@@ -162,18 +160,6 @@ level is enabled.
 =head3 is_fatal
 
  say q{fatal'ing} if $l->is_fatal;
-
-=head1 AUTHOR
-
-See L<Log::Contextual/"AUTHOR">
-
-=head1 COPYRIGHT
-
-See L<Log::Contextual/"COPYRIGHT">
-
-=head1 LICENSE
-
-See L<Log::Contextual/"LICENSE">
 
 =cut
 

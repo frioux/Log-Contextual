@@ -1,5 +1,10 @@
 package Log::Contextual::Easy::Default;
 
+# ABSTRACT: Import all logging methods with WarnLogger as default
+
+use strict;
+use warnings;
+
 use base 'Log::Contextual';
 
 sub arg_default_logger {
@@ -18,10 +23,6 @@ sub default_import { qw(:dlog :log ) }
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual::Easy::Default - Import all logging methods with WarnLogger as default
 
 =head1 SYNOPSIS
 
@@ -58,8 +59,6 @@ For what C<::Default> implies, see L<Log::Contextual/-default_logger>.
 =head1 SEE ALSO
 
 =over 4
-
-=item L<Log::Contextual>
 
 =item L<Log::Contextual::Easy::Package>
 

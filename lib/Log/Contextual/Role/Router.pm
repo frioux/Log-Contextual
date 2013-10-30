@@ -1,5 +1,7 @@
 package Log::Contextual::Role::Router;
 
+# ABSTRACT: Abstract interface between loggers and logging code blocks
+
 use Moo::Role;
 
 requires 'before_import';
@@ -9,10 +11,6 @@ requires 'handle_log_request';
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual::Role::Router - Abstract interface between loggers and logging code blocks
 
 =head1 SYNOPSIS
 
@@ -182,13 +180,3 @@ as well.
 =back
 
 =back
-
-=head1 SEE ALSO
-
-=over 4
-
-=item C<Log::Contextual>
-
-=back
-
-

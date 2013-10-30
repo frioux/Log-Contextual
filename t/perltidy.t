@@ -13,7 +13,7 @@ require Test::PerlTidy;
 Test::PerlTidy::run_tests(
    path       => '.',
    perltidyrc => '.perltidyrc',
-   exclude    => ['inc/'],
+   exclude    => ['.build/'],
 );
 
 done_testing;

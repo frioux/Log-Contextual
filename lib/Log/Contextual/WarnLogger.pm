@@ -1,5 +1,7 @@
 package Log::Contextual::WarnLogger;
 
+# ABSTRACT: logger for libraries using Log::Contextual
+
 use strict;
 use warnings;
 
@@ -116,10 +118,6 @@ sub _log {
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual::WarnLogger - Simple logger for libraries using Log::Contextual
 
 =head1 SYNOPSIS
 
@@ -272,18 +270,6 @@ environment variable is enabled.
 
 If different levels are specified, appropriate is_$level functions work as you
 would expect.
-
-=head1 AUTHOR
-
-See L<Log::Contextual/"AUTHOR">
-
-=head1 COPYRIGHT
-
-See L<Log::Contextual/"COPYRIGHT">
-
-=head1 LICENSE
-
-See L<Log::Contextual/"LICENSE">
 
 =cut
 

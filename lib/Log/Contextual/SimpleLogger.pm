@@ -1,5 +1,8 @@
 package Log::Contextual::SimpleLogger;
 
+# ABSTRACT: Super simple logger made for playing with Log::Contextual
+
+
 use strict;
 use warnings;
 
@@ -56,10 +59,6 @@ sub _log {
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual::SimpleLogger - Super simple logger made for playing with Log::Contextual
 
 =head1 SYNOPSIS
 
@@ -181,18 +180,6 @@ level is enabled.
 =head3 is_fatal
 
  say q{fatal'ing} if $l->is_fatal;
-
-=head1 AUTHOR
-
-See L<Log::Contextual/"AUTHOR">
-
-=head1 COPYRIGHT
-
-See L<Log::Contextual/"COPYRIGHT">
-
-=head1 LICENSE
-
-See L<Log::Contextual/"LICENSE">
 
 =cut
 

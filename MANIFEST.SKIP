@@ -1,1 +1,0 @@
-^(?!script/\w+\.pl|examples/[^\.]+|lib/[\/\w]+\.p(m|od)|inc/|t/\w+\.t|t/lib/[\/\w]+\.pm|t/\w+\.conf|Makefile.PL$|README$|MANIFEST$|Changes$|META.yml$)

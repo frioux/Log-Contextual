@@ -1,15 +1,2 @@
-*.swp
-/Build
-/_build
-/*.bak
-/*.old
-/blib
-/*gz
-/inc
-/pm_to_blib
-/Makefile
-/MANIFEST
-/META.yml
-/MYMETA.yml
-/MYMETA.json
-/README
+.build
+Log-Contextual-*

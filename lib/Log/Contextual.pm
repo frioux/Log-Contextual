@@ -1,11 +1,9 @@
 package Log::Contextual;
 
+# ABSTRACT: Simple logging interface with a contextual log
+
 use strict;
 use warnings;
-
-our $VERSION = '0.006000';
-$VERSION = eval $VERSION
-  if $VERSION =~ /_/;    # numify for warning-free dev releases
 
 my @levels = qw(debug trace warn info error fatal);
 
@@ -190,10 +188,6 @@ for (qw(set with)) {
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Contextual - Simple logging interface with a contextual log
 
 =head1 SYNOPSIS
 
@@ -672,10 +666,6 @@ functions. The router singleton is available as the return value of the router()
 of Log::Contextual may overload router() to return instances of custom log routers that
 could for example work with loggers that use a different interface.
 
-=head1 AUTHOR
-
-frew - Arthur Axel "fREW" Schmidt <frioux@gmail.com>
-
 =head1 CONTRIBUTORS
 
 =encoding utf8
@@ -687,16 +677,6 @@ voj - Jakob Voß <voss@gbv.de>
 =head1 DESIGNER
 
 mst - Matt S. Trout <mst@shadowcat.co.uk>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2012 the Log::Contextual L</AUTHOR> and L</DESIGNER> as listed
-above.
-
-=head1 LICENSE
-
-This library is free software and may be distributed under the same terms as
-Perl 5 itself.
 
 =cut
 
