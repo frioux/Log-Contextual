@@ -201,8 +201,6 @@ Note that C<UPTO> is a convenience variable.  If you set
 C<< FOO_UPTO=TRACE >> it will enable all log levels.  Similarly, if you
 set it to C<FATAL> only fatal will be enabled.
 
-=back
-
 =head2 $level
 
 Arguments: C<@anything>
