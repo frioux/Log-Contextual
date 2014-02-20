@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix missing POD
 
 0.006001  2014-02-20 15:51:29CST-0600 America/Chicago
   - Fix warnings caused by importing more than once
