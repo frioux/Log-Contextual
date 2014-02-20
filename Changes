@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.006002  2014-02-20 16:05:20CST-0600 America/Chicago
   - Fix missing POD
 
 0.006001  2014-02-20 15:51:29CST-0600 America/Chicago
