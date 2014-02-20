@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.006001  2014-02-20 15:51:29CST-0600 America/Chicago
   - Fix warnings caused by importing more than once
 
 0.006000 2013-09-05
