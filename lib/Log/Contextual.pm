@@ -11,10 +11,24 @@ use Exporter::Declare;
 use Exporter::Declare::Export::Generator;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
+use Sub::Identify 'stash_name';
 
 my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
 
 my @log = ((map "log_$_", @levels), (map "logS_$_", @levels));
+
+sub _maybe_export {
+   my ($spec, $target, $name, $new_code) = @_;
+
+   if (my $code = $target->can($name)) {
+
+      # this will warn
+      $spec->add_export("&$name", $new_code)
+        unless (stash_name($code) eq __PACKAGE__);
+   } else {
+      $spec->add_export("&$name", $new_code)
+   }
+}
 
 eval {
    require Log::Log4perl;
@@ -78,21 +92,27 @@ sub before_import {
       die ref($router) . " does not support set_logger()"
         unless $router->does('Log::Contextual::Role::Router::SetLogger');
 
-      $spec->add_export('&set_logger', sub { $router->set_logger(@_) })
+      _maybe_export($spec, $importer, 'set_logger',
+         sub { $router->set_logger(@_) },
+      );
    }
 
    if ($exports->{'&with_logger'}) {
       die ref($router) . " does not support with_logger()"
         unless $router->does('Log::Contextual::Role::Router::WithLogger');
 
-      $spec->add_export('&with_logger', sub { $router->with_logger(@_) })
+      _maybe_export($spec, $importer, 'with_logger',
+         sub { $router->with_logger(@_) },
+      );
    }
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
       if ($spec->config->{log} || $exports->{"&log_$level"}) {
-         $spec->add_export(
-            "&log_$level",
+         _maybe_export(
+            $spec,
+            $importer,
+            "log_$level",
             sub (&@) {
                my ($code, @args) = @_;
                $router->handle_log_request(
@@ -104,11 +124,14 @@ sub before_import {
                   message_args   => \@args,
                );
                return @args;
-            });
+            },
+         );
       }
       if ($spec->config->{log} || $exports->{"&logS_$level"}) {
-         $spec->add_export(
-            "&logS_$level",
+         _maybe_export(
+            $spec,
+            $importer,
+            "logS_$level",
             sub (&@) {
                my ($code, @args) = @_;
                $router->handle_log_request(
@@ -120,11 +143,14 @@ sub before_import {
                   message_args   => \@args,
                );
                return $args[0];
-            });
+            },
+         );
       }
       if ($spec->config->{dlog} || $exports->{"&Dlog_$level"}) {
-         $spec->add_export(
-            "&Dlog_$level",
+         _maybe_export(
+            $spec,
+            $importer,
+            "Dlog_$level",
             sub (&@) {
                my ($code, @args) = @_;
                my $wrapped = sub {
@@ -140,11 +166,14 @@ sub before_import {
                   message_args   => \@args,
                );
                return @args;
-            });
+            },
+         );
       }
       if ($spec->config->{dlog} || $exports->{"&DlogS_$level"}) {
-         $spec->add_export(
-            "&DlogS_$level",
+         _maybe_export(
+            $spec,
+            $importer,
+            "DlogS_$level",
             sub (&$) {
                my ($code, $ref) = @_;
                my $wrapped = sub {

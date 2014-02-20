@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix warnings caused by importing more than once
 
 0.006000 2013-09-05
   - Add Log::Contextual::Easy::Default for simple LC usage (Jakob Voß)
