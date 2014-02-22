@@ -11,7 +11,19 @@ use Exporter::Declare;
 use Exporter::Declare::Export::Generator;
 use Data::Dumper::Concise;
 use Scalar::Util 'blessed';
-use Sub::Identify 'stash_name';
+
+use B qw(svref_2object);
+
+sub stash_name {
+   my ($coderef) = @_;
+   ref $coderef or return;
+   my $cv = B::svref_2object($coderef);
+   $cv->isa('B::CV') or return;
+   # bail out if GV is undefined
+   $cv->GV->isa('B::SPECIAL') and return;
+
+   return $cv->GV->STASH->NAME;
+}
 
 my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
 

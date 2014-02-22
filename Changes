@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Stop depending on XS module Sub::Identify
 
 0.006002  2014-02-20 16:05:20CST-0600 America/Chicago
   - Fix missing POD
