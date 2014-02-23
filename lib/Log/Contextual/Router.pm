@@ -1,5 +1,7 @@
 package Log::Contextual::Router;
 
+# ABSTRACT: Route messages to loggers
+
 use Moo;
 use Scalar::Util 'blessed';
 
