@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.006004  2014-07-15 21:50:41-05:00 America/Chicago
+ - Various POD fixes (Karent Etheridge, Florian Schlichting)
+
 0.006003  2014-02-22 09:41:29CST-0600 America/Chicago
   - Stop depending on XS module Sub::Identify
 
