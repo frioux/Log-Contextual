@@ -136,9 +136,11 @@ sub handle_log_request {
 
    $message_info{caller_level}++;
 
-   foreach my $logger ($self->get_loggers(%message_info)) {
-      $logger->$log_level($generator->(@$args));
-   }
+   my @loggers = $self->get_loggers(%message_info)
+     or return;
+
+   my @log = $generator->(@$args);
+   $_->$log_level(@log) for @loggers;
 }
 
 1;
