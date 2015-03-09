@@ -47,5 +47,11 @@ for my $level (@levels) {
    @foo = main->can("Dlog_$level")->(sub { "nothing: $_" }, ());
    ok(eq_array(\@foo, []), "Dlog_$level passes nothing through correctly");
    is($var, "[$level] nothing: ()\n", "Output for Dlog_$level is correct");
+
+   local $TODO = "DlogS currently doesn't pass 'nothing' correctly";
+
+   @foo = main->can("DlogS_$level")->(sub { "nothing: $_" }, ());
+   ok(eq_array(\@foo, []), "Dlog_$level passes nothing through correctly");
+   is($var, "[$level] nothing: ()\n", "Output for Dlog_$level is correct");
 }
 
