@@ -19,6 +19,7 @@ sub stash_name {
    ref $coderef or return;
    my $cv = B::svref_2object($coderef);
    $cv->isa('B::CV') or return;
+
    # bail out if GV is undefined
    $cv->GV->isa('B::SPECIAL') and return;
 
@@ -120,89 +121,67 @@ sub before_import {
 
    my @levels = @{$class->arg_levels($spec->config->{levels})};
    for my $level (@levels) {
+      my %base =
+        (exporter => $class, caller_level => 1, message_level => $level);
+      my %exports;
       if ($spec->config->{log} || $exports->{"&log_$level"}) {
-         _maybe_export(
-            $spec,
-            $importer,
-            "log_$level",
-            sub (&@) {
-               my ($code, @args) = @_;
-               $router->handle_log_request(
-                  exporter       => $class,
-                  caller_package => scalar(caller),
-                  caller_level   => 1,
-                  message_level  => $level,
-                  message_sub    => $code,
-                  message_args   => \@args,
-               );
-               return @args;
-            },
-         );
+         $exports{log_} = sub (&@) {
+            my ($code, @args) = @_;
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $code,
+               message_args   => \@args,
+            );
+            return @args;
+         };
       }
       if ($spec->config->{log} || $exports->{"&logS_$level"}) {
-         _maybe_export(
-            $spec,
-            $importer,
-            "logS_$level",
-            sub (&@) {
-               my ($code, @args) = @_;
-               $router->handle_log_request(
-                  exporter       => $class,
-                  caller_package => scalar(caller),
-                  caller_level   => 1,
-                  message_level  => $level,
-                  message_sub    => $code,
-                  message_args   => \@args,
-               );
-               return $args[0];
-            },
-         );
+         $exports{logS_} = sub (&@) {
+            my ($code, @args) = @_;
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $code,
+               message_args   => \@args,
+            );
+            return $args[0];
+         };
       }
       if ($spec->config->{dlog} || $exports->{"&Dlog_$level"}) {
-         _maybe_export(
-            $spec,
-            $importer,
-            "Dlog_$level",
-            sub (&@) {
-               my ($code, @args) = @_;
-               my $wrapped = sub {
-                  local $_ = (@_ ? Data::Dumper::Concise::Dumper @_ : '()');
-                  &$code;
-               };
-               $router->handle_log_request(
-                  exporter       => $class,
-                  caller_package => scalar(caller),
-                  caller_level   => 1,
-                  message_level  => $level,
-                  message_sub    => $wrapped,
-                  message_args   => \@args,
-               );
-               return @args;
-            },
-         );
+         $exports{Dlog_} = sub (&@) {
+            my ($code, @args) = @_;
+            my $wrapped = sub {
+               local $_ = (@_ ? Data::Dumper::Concise::Dumper @_ : '()');
+               &$code;
+            };
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $wrapped,
+               message_args   => \@args,
+            );
+            return @args;
+         };
       }
       if ($spec->config->{dlog} || $exports->{"&DlogS_$level"}) {
-         _maybe_export(
-            $spec,
-            $importer,
-            "DlogS_$level",
-            sub (&$) {
-               my ($code, $ref) = @_;
-               my $wrapped = sub {
-                  local $_ = Data::Dumper::Concise::Dumper($_[0]);
-                  &$code;
-               };
-               $router->handle_log_request(
-                  exporter       => $class,
-                  caller_package => scalar(caller),
-                  caller_level   => 1,
-                  message_level  => $level,
-                  message_sub    => $wrapped,
-                  message_args   => [$ref],
-               );
-               return $ref;
-            });
+         $exports{DlogS_} = sub (&$) {
+            my ($code, $ref) = @_;
+            my $wrapped = sub {
+               local $_ = Data::Dumper::Concise::Dumper($_[0]);
+               &$code;
+            };
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $wrapped,
+               message_args   => [$ref],
+            );
+            return $ref;
+         };
       }
+      _maybe_export($spec, $importer, $_ . $level, $exports{$_})
+        for keys %exports;
    }
 }
 
