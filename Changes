@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Fix warning introduced in 5.21.x
 
 0.006004  2014-07-15 21:50:41-05:00 America/Chicago
  - Various POD fixes (Karent Etheridge, Florian Schlichting)

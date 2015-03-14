@@ -72,7 +72,7 @@ use Test::Fatal;
       local $ENV{BAR_UPTO} = 'foo';
       like(
          exception { $l->is_bar },
-         qr/Unrecognized log level 'foo' in \$ENV{BAR_UPTO}/,
+         qr/Unrecognized log level 'foo' in \$ENV\{BAR_UPTO\}/,
          'Cannot use an unrecognized log level in UPTO',
       );
    }
