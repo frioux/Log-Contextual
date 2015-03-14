@@ -11,7 +11,7 @@ my $var_log = Log::Contextual::SimpleLogger->new({
       coderef => sub {
          chomp($_[0]);
          $var = "$_[0] at $caller_info[1] line $caller_info[2].\n"
-        }
+      }
    });
 my $warn_faker = sub {
    my ($package, $args) = @_;

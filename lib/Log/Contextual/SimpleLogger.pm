@@ -2,7 +2,6 @@ package Log::Contextual::SimpleLogger;
 
 # ABSTRACT: Super simple logger made for playing with Log::Contextual
 
-
 use strict;
 use warnings;
 
