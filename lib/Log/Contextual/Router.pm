@@ -7,7 +7,8 @@ use Scalar::Util 'blessed';
 
 with 'Log::Contextual::Role::Router',
   'Log::Contextual::Role::Router::SetLogger',
-  'Log::Contextual::Role::Router::WithLogger';
+  'Log::Contextual::Role::Router::WithLogger',
+  'Log::Contextual::Role::Router::HasLogger';
 
 eval {
    require Log::Log4perl;
@@ -83,6 +84,8 @@ sub set_logger {
      if $_[0]->_get_logger->{l};
    $_[0]->_get_logger->{l} = $logger;
 }
+
+sub has_logger { !!$_[0]->_get_logger->{l} }
 
 sub _set_default_logger_for {
    my $logger = $_[2];
