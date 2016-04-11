@@ -53,7 +53,7 @@ eval {
 # export anything but the levels selected
 sub ____ { }
 
-exports('____', @dlog, @log, qw( set_logger with_logger ));
+exports('____', @dlog, @log, qw( set_logger with_logger has_logger ));
 
 export_tag dlog => ('____');
 export_tag log  => ('____');
@@ -116,6 +116,15 @@ sub before_import {
 
       _maybe_export($spec, $importer, 'with_logger',
          sub { $router->with_logger(@_) },
+      );
+   }
+
+   if ($exports->{'&has_logger'}) {
+      die ref($router) . " does not support has_logger()"
+        unless $router->does('Log::Contextual::Role::Router::HasLogger');
+
+      _maybe_export($spec, $importer, 'has_logger',
+         sub { $router->has_logger(@_) },
       );
    }
 
@@ -470,6 +479,15 @@ Arguments: L</LOGGER CODEREF>, C<CodeRef $to_execute>
 C<with_logger> sets the logger for the scope of the C<CodeRef> C<$to_execute>.
 As with L</set_logger>, C<with_logger> will wrap C<$returning_logger> with a
 C<CodeRef> if needed.
+
+=head2 has_logger
+
+ my $logger = WarnLogger->new;
+ set_logger $logger unless has_logger;
+
+Arguments: none
+
+C<has_logger> will return true if a logger has been set.
 
 =head2 log_$level
 

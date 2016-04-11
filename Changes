@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Add `has_logger` predicate to avoid setting logger twice
+   (Thanks Wes Malone!  Thwes!)
 
 0.006005  2015-03-14 12:54:46-05:00 America/Chicago
  - Fix performance (and arguably duplicate side effects!) in multilogger setups
