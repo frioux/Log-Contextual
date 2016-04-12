@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.007000  2016-04-11 21:35:41-07:00 America/Los_Angeles
  - Add `has_logger` predicate to avoid setting logger twice
    (Thanks Wes Malone!  Thwes!)
 
