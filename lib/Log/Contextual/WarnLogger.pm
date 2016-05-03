@@ -239,6 +239,8 @@ All of the following six methods work the same.  The basic pattern is:
 If different levels are specified, appropriate functions named for your custom
 levels work as you expect.
 
+B<Note:> C<fatal> does not call C<die> for you, see L<Log::Contextual/EXCEPTIONS AND ERROR HANDLING>
+
 =head2 is_$level
 
 All of the following six functions just return true if their respective
