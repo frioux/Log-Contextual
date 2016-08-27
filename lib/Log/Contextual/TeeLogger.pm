@@ -132,6 +132,8 @@ All of the following six methods work the same.  The basic pattern is:
 
  $l->fatal( '1 is never equal to 0!' );
 
+B<Note:> C<fatal> does not call C<die> for you, see L<Log::Contextual/EXCEPTIONS AND ERROR HANDLING>
+
 =head2 is_$level
 
 All of the following six functions just return true if their respective
