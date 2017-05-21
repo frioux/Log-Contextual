@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+- Stop testing exact bytes produced by Data::Dumper::Concise
+  (Thanks for reporting Errietta Kostal)
+  (Fixes GH#11)
 - Add some documentation about exceptions
   (Thanks Kent Fredric!)
 
