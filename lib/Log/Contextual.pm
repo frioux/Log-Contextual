@@ -145,6 +145,18 @@ sub before_import {
             return @args;
          };
       }
+      if ($spec->config->{log} || $exports->{"&slog_$level"}) {
+         $exports{slog_} = sub {
+            my ($text, @args) = @_;
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_text   => $text,
+               message_args   => \@args,
+            );
+            return @args;
+         };
+      }
       if ($spec->config->{log} || $exports->{"&logS_$level"}) {
          $exports{logS_} = sub (&@) {
             my ($code, @args) = @_;
@@ -152,6 +164,18 @@ sub before_import {
                %base,
                caller_package => scalar(caller),
                message_sub    => $code,
+               message_args   => \@args,
+            );
+            return $args[0];
+         };
+      }
+      if ($spec->config->{log} || $exports->{"&slogS_$level"}) {
+         $exports{slogS_} = sub {
+            my ($text, @args) = @_;
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_text   => $text,
                message_args   => \@args,
             );
             return $args[0];
@@ -173,12 +197,42 @@ sub before_import {
             return @args;
          };
       }
+      if ($spec->config->{dlog} || $exports->{"&Dslog_$level"}) {
+         $exports{Dslog_} = sub {
+            my ($text, @args) = @_;
+            my $wrapped = sub {
+               $text . (@_ ? Data::Dumper::Concise::Dumper @_ : '()');
+            };
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $wrapped,
+               message_args   => \@args,
+            );
+            return @args;
+         };
+      }
       if ($spec->config->{dlog} || $exports->{"&DlogS_$level"}) {
          $exports{DlogS_} = sub (&$) {
             my ($code, $ref) = @_;
             my $wrapped = sub {
                local $_ = Data::Dumper::Concise::Dumper($_[0]);
                &$code;
+            };
+            $router->handle_log_request(
+               %base,
+               caller_package => scalar(caller),
+               message_sub    => $wrapped,
+               message_args   => [$ref],
+            );
+            return $ref;
+         };
+      }
+      if ($spec->config->{dlog} || $exports->{"&DslogS_$level"}) {
+         $exports{DslogS_} = sub {
+            my ($text, $ref) = @_;
+            my $wrapped = sub {
+               $text . Data::Dumper::Concise::Dumper($_[0]);
             };
             $router->handle_log_request(
                %base,

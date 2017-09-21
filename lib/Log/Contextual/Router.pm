@@ -134,6 +134,7 @@ sub get_loggers {
 sub handle_log_request {
    my ($self, %message_info) = @_;
    my $generator = $message_info{message_sub};
+   my $text      = $message_info{message_text};
    my $args      = $message_info{message_args};
    my $log_level = $message_info{message_level};
 
@@ -142,7 +143,7 @@ sub handle_log_request {
    my @loggers = $self->get_loggers(%message_info)
      or return;
 
-   my @log = $generator->(@$args);
+   my @log = defined $text ? ($text) : ($generator->(@$args));
    $_->$log_level(@log) for @loggers;
 }
 
