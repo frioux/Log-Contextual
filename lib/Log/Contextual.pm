@@ -297,7 +297,7 @@ __END__
      log_trace { 'foo entered' };
      my ($foo, $bar) = Dlog_trace { "params for foo: $_" } @args;
      # ...
-     log_trace { 'foo left' };
+     slog_trace 'foo left';
    };
  }
 
@@ -326,7 +326,7 @@ Major benefits:
 
 =item * Efficient
 
-The logging functions take blocks, so if a log level is disabled, the
+The default logging functions take blocks, so if a log level is disabled, the
 block will not run:
 
  # the following won't run if debug is off
@@ -591,6 +591,14 @@ B<Note:> C<log_fatal> does not call C<die> for you, see L</EXCEPTIONS AND ERROR 
 
 =back
 
+=head2 slog_$level
+
+Mostly the same as L</log_$level>, but expects a string as first argument,
+not a block. Arguments are passed through just the same, but since it's just a
+string, interpolation of arguments into it must be done manually.
+
+ my @friends = slog_trace 'friends list being generated.', generate_friend_list();
+
 =head2 logS_$level
 
 Import Tag: C<:log>
@@ -606,6 +614,14 @@ same:
  } friend();
 
 See also: L</DlogS_$level>.
+
+=head2 slogS_$level
+
+Mostly the same as L</logS_$level>, but expects a string as first argument,
+not a block. Arguments are passed through just the same, but since it's just a
+string, interpolation of arguments into it must be done manually.
+
+ my $friend = slogS_trace 'I only have one friend.', friend();
 
 =head2 Dlog_$level
 
@@ -649,6 +665,15 @@ B<Note:> C<Dlog_fatal> does not call C<die> for you, see L</EXCEPTIONS AND ERROR
 
 =back
 
+=head2 Dslog_$level
+
+Mostly the same as L</Dlog_$level>, but expects a string as first argument,
+not a block. Arguments are passed through just the same, but since it's just a
+string, no interpolation point can be used, instead the Dumper output is
+appended.
+
+ my @nicks = Dslog_debug "names: ", map $_->value, $frew->names->all;
+
 =head2 DlogS_$level
 
 Import Tag: C<:dlog>
@@ -660,6 +685,16 @@ They only take a single scalar after the C<$returning_message> instead of
 slurping up (and also setting C<wantarray>) all the C<@args>
 
  my $pals_rs = DlogS_debug { "pals resultset: $_" }
+   $schema->resultset('Pals')->search({ perlers => 1 });
+
+=head2 DslogS_$level
+
+Mostly the same as L</DlogS_$level>, but expects a string as first argument,
+not a block. Arguments are passed through just the same, but since it's just a
+string, no interpolation point can be used, instead the Dumper output is
+appended.
+
+ my $pals_rs = DslogS_debug "pals resultset: ",
    $schema->resultset('Pals')->search({ perlers => 1 });
 
 =head1 LOGGER CODEREF
