@@ -33,7 +33,9 @@ my @log = ((map "log_$_", @levels), (map "logS_$_", @levels));
 sub _maybe_export {
    my ($spec, $target, $name, $new_code) = @_;
 
-   if (my $code = $target->can($name)) {
+   no strict 'refs';
+   if (defined &{"${target}::${name}"}) {
+      my $code = \&{"${target}::${name}"};
 
       # this will warn
       $spec->add_export("&$name", $new_code)
