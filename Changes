@@ -3,6 +3,8 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
  - Add slog for logging strings without a code block
    (Thanks Christian Walde!)
+ - Fix exporting into classes that subclass from users of Log::Contextual.
+   (Thanks Graham Knop!)
 
 0.007001  2017-05-21 07:49:18-07:00 America/Los_Angeles
  - Stop testing exact bytes produced by Data::Dumper::Concise
