@@ -1,12 +1,14 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Add slog for logging strings without a code block
+   (Thanks Christian Walde!)
 
 0.007001  2017-05-21 07:49:18-07:00 America/Los_Angeles
-- Stop testing exact bytes produced by Data::Dumper::Concise
+ - Stop testing exact bytes produced by Data::Dumper::Concise
   (Thanks for reporting Errietta Kostal)
   (Fixes GH#11)
-- Add some documentation about exceptions
+ - Add some documentation about exceptions
   (Thanks Kent Fredric!)
 
 0.007000  2016-04-11 21:35:41-07:00 America/Los_Angeles
