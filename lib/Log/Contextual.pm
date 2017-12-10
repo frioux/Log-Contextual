@@ -26,9 +26,17 @@ sub stash_name {
    return $cv->GV->STASH->NAME;
 }
 
-my @dlog = ((map "Dlog_$_", @levels), (map "DlogS_$_", @levels));
+my @dlog = (
+   (map "Dlog_$_", @levels),
+   (map "DlogS_$_",  @levels),
+   (map "Dslog_$_",  @levels),
+   (map "DslogS_$_", @levels));
 
-my @log = ((map "log_$_", @levels), (map "logS_$_", @levels));
+my @log = (
+   (map "log_$_", @levels),
+   (map "logS_$_",  @levels),
+   (map "slog_$_",  @levels),
+   (map "slogS_$_", @levels));
 
 sub _maybe_export {
    my ($spec, $target, $name, $new_code) = @_;

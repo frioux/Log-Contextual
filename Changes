@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Ensure new slog functions are exportable (Thanks Dan Book!)
 
 0.008000  2017-11-24 08:40:15-08:00 America/Los_Angeles
  - Add slog for logging strings without a code block
