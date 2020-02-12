@@ -569,7 +569,7 @@ is called on the underlying C<$logger> object.  The basic pattern is:
    @_
  }
 
-Note that the function returns it's arguments.  This can be used in a number of
+Note that the function returns its arguments.  This can be used in a number of
 ways, but often it's convenient just for partial inspection of passthrough data
 
  my @friends = log_trace {
