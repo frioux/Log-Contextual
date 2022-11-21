@@ -42,15 +42,15 @@ sub after_import {
    my $target   = $import_info{target};
    my $config   = $import_info{arguments};
 
-   if (my $l = $exporter->arg_logger($config->{logger})) {
+   if (my $l = $exporter->arg_logger($config->{logger}, $target)) {
       $self->set_logger($l);
    }
 
-   if (my $l = $exporter->arg_package_logger($config->{package_logger})) {
+   if (my $l = $exporter->arg_package_logger($config->{package_logger}, $target)) {
       $self->_set_package_logger_for($target, $l);
    }
 
-   if (my $l = $exporter->arg_default_logger($config->{default_logger})) {
+   if (my $l = $exporter->arg_default_logger($config->{default_logger}, $target)) {
       $self->_set_default_logger_for($target, $l);
    }
 }
