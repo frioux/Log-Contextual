@@ -12,7 +12,7 @@ sub arg_package_logger {
       return $_[1];
    } else {
       require Log::Contextual::WarnLogger;
-      my $package = uc(caller(3));
+      my $package = uc(caller(2));
       $package =~ s/::/_/g;
       return Log::Contextual::WarnLogger->new({env_prefix => $package});
    }
